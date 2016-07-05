@@ -1,0 +1,28 @@
+# cannot contain more than 100 characters
+
+Charlist = [
+# page 1, 0-9
+	"Phoenix",
+	"Layton",
+	"Young Mia",
+	"Apollo",
+	"Birdman",
+	"Ryunosuke Naruhodo",
+	"Athena",
+	"AAI-YoungFranziska",
+	"AAI Gregory",
+	"Raymond Shields",
+# page 1, 10-19
+	"Kay",
+	"Holmes",
+	"Shimon",
+	"Wocky Kitaki",
+	"Tsukasa",
+	"Miles",
+	"Godot",
+	"Manfred",
+	"Itami_Muto",
+	"Robin Newman",
+# page 2, 20-29
+	"Portsman",
+]

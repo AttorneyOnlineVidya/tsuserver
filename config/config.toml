@@ -1,0 +1,4 @@
+Port = 50000
+Slots = 100
+Timeout = 120
+Reservedname = "<dollar>HOST"

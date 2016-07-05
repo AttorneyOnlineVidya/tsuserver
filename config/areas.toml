@@ -1,0 +1,9 @@
+Defaultarea = 0
+
+[[Arealist]]
+Areaid = 0
+Name = "Basement"
+
+[[Arealist]]
+Areaid = 1
+Name = "Courtroom 1"
