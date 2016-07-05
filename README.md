@@ -9,12 +9,9 @@ around, hoping for better performance and more flexibility.
 * Multiple areas per server
 * Simple user management
 
-## TODO
+## How to use
 
-* Check for multiple characters in the same area
-* Implement moderation commands
-* Implement a kick/ban system
-* Implement throttling for each client
+Compile and run.
 
 ## License
 
