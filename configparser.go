@@ -42,6 +42,8 @@ type Config struct {
 	Defaultarea  int
 	Timeout      int
 	Reservedname string
+	Modpass      string
+	Guardpass    string
 }
 
 var config Config
@@ -56,6 +58,10 @@ func loadConfig() {
 	}
 
 	if _, err := toml.DecodeFile("./config/areas.toml", &config); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := toml.DecodeFile("./config/secret.toml", &config); err != nil {
 		log.Fatal(err)
 	}
 

@@ -75,10 +75,10 @@ func handleClient(conn net.Conn) {
 		if rawmsg[0] == '#' { // encrypted cmd
 			rawmsg = rawmsg[1:]
 			splitmsg := strings.Split(rawmsg, "#")[0]
-			cmd = decryptMessage(hexToBytes(splitmsg), decrypt_key)
+			cmd = decryptMessage(hexToBytes(splitmsg), crypt_key)
 		} else if (rawmsg[0] == '3') || (rawmsg[0] == '4') { // encrypted cmd
 			splitmsg := strings.Split(rawmsg, "#")[0]
-			cmd = decryptMessage(hexToBytes(splitmsg), decrypt_key)
+			cmd = decryptMessage(hexToBytes(splitmsg), crypt_key)
 		} else { // plaintext cmd
 			cmd = strings.Split(rawmsg, "#")[0]
 		}

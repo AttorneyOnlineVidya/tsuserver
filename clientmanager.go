@@ -66,7 +66,6 @@ func (cl *Client) sendServerMessageOOC(msg string) {
 	cl.sendRawMessage("CT#" + config.Reservedname + "#" + msg + "#%")
 }
 
-// TODO fix senddone in general
 func (cl *Client) sendDone() {
 	/*
 		CharsCheck - For each charid sends either a 0 if free or -1 if taken.
@@ -77,7 +76,8 @@ func (cl *Client) sendDone() {
 	cl.sendRawMessage(charcheck)
 	cl.sendRawMessage("BN#gs4#%")
 	cl.sendRawMessage("MM#1#%")
-	//cl.sendRawMessage("OPPASS#676599#%") // TODO fix
+	cl.sendRawMessage("OPPASS#" +
+		encryptMessage(config.Guardpass, crypt_key) + "#%")
 	cl.sendRawMessage("DONE#%")
 }
 

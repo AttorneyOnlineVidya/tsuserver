@@ -25,19 +25,19 @@ import (
 	"strconv"
 )
 
-var decrypt_const1 uint16 = 53761
-var decrypt_const2 uint16 = 32618
-var decrypt_key uint16
-
-func hexToBytes(hexstr string) []byte {
-	out, _ := hex.DecodeString(hexstr)
-	return out
-}
+var crypt_const1 uint16 = 53761
+var crypt_const2 uint16 = 32618
+var crypt_key uint16
 
 func calcKeys() {
 	var tmp int
 	tmp, _ = strconv.Atoi(decryptMessage([]byte("4"), 322))
-	decrypt_key = uint16(tmp)
+	crypt_key = uint16(tmp)
+}
+
+func hexToBytes(hexstr string) []byte {
+	out, _ := hex.DecodeString(hexstr)
+	return out
 }
 
 func decryptMessage(enc_msg []byte, key uint16) string {
@@ -45,7 +45,18 @@ func decryptMessage(enc_msg []byte, key uint16) string {
 	var out string
 	for _, val := range enc_msg {
 		out += string(uint16(val) ^ (key >> 8))
-		key = ((uint16(val) + key) * decrypt_const1) + decrypt_const2
+		key = ((uint16(val) + key) * crypt_const1) + crypt_const2
+	}
+	return out
+}
+
+func encryptMessage(pt string, key uint16) string {
+	// "crypt"
+	var out string
+	for _, chr := range pt {
+		val := uint16(chr) ^ (key >> 8)
+		out += strconv.FormatUint(uint64(val), 16)
+		key = ((val + key) * crypt_const1) + crypt_const2
 	}
 	return out
 }
