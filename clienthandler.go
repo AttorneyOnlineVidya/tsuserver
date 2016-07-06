@@ -176,7 +176,7 @@ MC#Prelude(T&T).mp3#11#%
 func parseMusic(rawmsg string, client *Client) (string, error) {
 	split_msg := strings.Split(rawmsg, "#")
 
-	// check if message even makes sense
+	// check message format
 	if len(split_msg) != 4 {
 		return "", errors.New("Message format is wrong.")
 	}
@@ -224,9 +224,9 @@ MS#chat#damage#Portsman#damaged#text#pro#sfx-stab#1#20#1#0#0#20#0#0#%
 5  = message text (<= 256 chars)
 6  = position (def, pro, jud, wit, hld, hlp)
 7  = sound effect (1 if none)
-8  = ???
+8  = animation type (0 = no pre, 1 = pre, 2 = pre button 5 = zoom)
 9  = char id
-10 = ???
+10 = sound effect delay (>= 0)
 11 = buttons (1 = hold it, 2 = objection, 3 = take that)
 12 = ???
 13 = char id
@@ -234,9 +234,113 @@ MS#chat#damage#Portsman#damaged#text#pro#sfx-stab#1#20#1#0#0#20#0#0#%
 15 = color (0 = black, 1 = green, 2 = red, 3 = orange, 4 = blue)
 */
 func parseMessageIC(rawmsg string, client *Client) (string, error) {
-	// TODO validate properly
 	split_msg := strings.Split(rawmsg, "#")
-	ret := "MS#" + strings.Join(split_msg[1:], "#")
+
+	// check message format
+	if len(split_msg) != 17 {
+		return "", errors.New("Message format is wrong.")
+	}
+
+	// prepare variables
+	msgtype := split_msg[1]
+	preanim := split_msg[2]
+	foldername := split_msg[3]
+	anim := split_msg[4]
+	text := split_msg[5]
+	pos := split_msg[6]
+	sfx := split_msg[7]
+	animtype := split_msg[8]
+	charid1 := split_msg[9]
+	sfxdelay := split_msg[10]
+	button := split_msg[11]
+	unk := split_msg[12]
+	charid2 := split_msg[13]
+	ding := split_msg[14]
+	color := split_msg[15]
+
+	// check msgtype
+	if msgtype != "chat" {
+		return "", errors.New("Invalid message type.")
+	}
+
+	// check text length and trim if needed
+	if len(text) > 256 {
+		text = text[:256]
+	}
+
+	// check if pos is valid
+	validpos := map[string]bool{"def": true, "pro": true, "hld": true,
+		"hlp": true, "wit": true, "jud": true}
+	if !validpos[pos] {
+		return "", errors.New("Invalid position.")
+	}
+
+	// check if animtype is valid
+	if at, err := strconv.Atoi(animtype); err != nil {
+		return "", errors.New("Animation type must be a number.")
+	} else {
+		if !(at >= 0 && at <= 2) && !(at >= 5 && at <= 6) {
+			return "", errors.New("Invalid animation type.")
+		}
+	}
+
+	// check char ids
+	if cid1, err := strconv.Atoi(charid1); err != nil {
+		return "", errors.New("Character ID 1 must be an integer.")
+	} else {
+		if cid2, err := strconv.Atoi(charid2); err != nil {
+			return "", errors.New("Character ID 2 must be an integer..")
+		} else {
+			if cid1 != client.charid {
+				return "", errors.New("Character ID different from client.")
+			} else if cid1 != cid2 {
+				return "", errors.New("Character IDs don't match.")
+			} else if !isValidCharID(cid1) {
+				return "", errors.New("Character ID is invalid.")
+			}
+		}
+	}
+
+	// check sfx delay
+	if del, err := strconv.Atoi(sfxdelay); err != nil {
+		return "", errors.New("SFX Delay must be a number.")
+	} else {
+		if del < 0 {
+			return "", errors.New("SFX Delay must be a positive number.")
+		}
+	}
+
+	// check button
+	if but, err := strconv.Atoi(button); err != nil {
+		return "", errors.New("Button ID must be a number.")
+	} else {
+		if !(but >= 0 && but <= 3) {
+			return "", errors.New("Invalid button ID.")
+		}
+	}
+
+	// check ding
+	if d, err := strconv.Atoi(ding); err != nil {
+		return "", errors.New("Ding must be a number.")
+	} else {
+		if d != 0 && d != 1 {
+			return "", errors.New("Invalid ding ID.")
+		}
+	}
+
+	// check color
+	if col, err := strconv.Atoi(color); err != nil {
+		return "", errors.New("Color must be a number.")
+	} else {
+		if !(col >= 0 && col <= 4) {
+			return "", errors.New("Invalid color ID.")
+		}
+	}
+
+	// return message
+	ret := fmt.Sprintf("MS#%s#%s#%s#%s#%s#%s#%s#%s#%d#%s#%s#%s#%d#%s#%s#%%",
+		msgtype, preanim, foldername, anim, text, pos, sfx, animtype,
+		client.charid, sfxdelay, button, unk, client.charid, ding, color)
 
 	return ret, nil
 }
