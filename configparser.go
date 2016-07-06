@@ -49,6 +49,7 @@ type Config struct {
 var config Config
 
 func loadConfig() {
+	// load configs
 	if _, err := toml.DecodeFile("./config/config.toml", &config); err != nil {
 		log.Fatal(err)
 	}
@@ -82,5 +83,10 @@ func loadConfig() {
 
 		s := Song{Name: name, Duration: dur}
 		config.Musiclist = append(config.Musiclist, s)
+	}
+
+	// set defaults
+	for i := range config.Arealist {
+		config.Arealist[i].setDefaults()
 	}
 }

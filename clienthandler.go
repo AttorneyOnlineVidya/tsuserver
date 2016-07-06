@@ -122,7 +122,7 @@ func handleClient(conn net.Conn) {
 			}
 
 		case "AE": // evidence list
-			break
+			continue
 
 		case "AM": // music list
 			music_start, _ := strconv.Atoi(strings.Split(rawmsg, "#")[1])
@@ -141,6 +141,26 @@ func handleClient(conn net.Conn) {
 			// TODO health
 			client.sendRawMessage("HP#1#10#%")
 			client.sendRawMessage("HP#2#10#%")
+
+		case "HP": // penalties
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 4 {
+				continue
+			}
+			if val, err := strconv.Atoi(split_msg[2]); err == nil {
+				if split_msg[1] == "1" {
+					if err := client.area.setDefHP(val); err == nil {
+						client.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", val))
+					}
+				} else if split_msg[1] == "2" {
+					if err := client.area.setProHP(val); err == nil {
+						client.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", val))
+					}
+				}
+			}
+
+		case "RT": // WT/CE buttons
+			break
 
 		case "MC": // play music
 			if out_msg, err := parseMusic(rawmsg, &client); err != nil {

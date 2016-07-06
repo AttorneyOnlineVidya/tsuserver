@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
+	"errors"
 	"sync"
 )
 
@@ -27,6 +28,8 @@ type Area struct {
 	Name    string
 	clients []*Client
 	lock    sync.Mutex
+	hp_def  int
+	hp_pro  int
 }
 
 func (a *Area) sendRawMessage(msg string) {
@@ -70,5 +73,28 @@ func (a *Area) removeClient(c *Client) {
 			a.clients = append(a.clients[:i], a.clients[i+1:]...)
 			return
 		}
+	}
+}
+
+func (a *Area) setDefaults() {
+	a.hp_def = 10
+	a.hp_pro = 10
+}
+
+func (a *Area) setDefHP(hp int) error {
+	if hp >= 0 && hp <= 10 {
+		a.hp_def = hp
+		return nil
+	} else {
+		return errors.New("Invalid HP value.")
+	}
+}
+
+func (a *Area) setProHP(hp int) error {
+	if hp >= 0 && hp <= 10 {
+		a.hp_pro = hp
+		return nil
+	} else {
+		return errors.New("Invalid HP value.")
 	}
 }
