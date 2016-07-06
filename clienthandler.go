@@ -70,6 +70,10 @@ func handleClient(conn net.Conn) {
 			// TODO make it detect #% as a message separator
 			continue
 		}
+		// message is too short
+		if n < 2 {
+			continue
+		}
 		rawmsg = string(buf[:n])
 
 		if rawmsg[0] == '#' { // encrypted cmd
