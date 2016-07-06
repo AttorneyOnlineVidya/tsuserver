@@ -20,6 +20,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"sync"
 )
@@ -52,6 +53,9 @@ func (cl *Client) changeAreaID(areaid int) error {
 			// add to new area
 			v.addClient(cl)
 			cl.area = v
+			// send current penalties
+			cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
+			cl.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", cl.area.hp_pro))
 			return nil
 		}
 	}

@@ -138,9 +138,6 @@ func handleClient(conn net.Conn) {
 			// user selected character
 			client.sendRawMessage("PV#" + strconv.FormatUint(client.clientid, 10) +
 				"#CID#" + strconv.Itoa(client.charid) + "#%")
-			// TODO health
-			client.sendRawMessage("HP#1#10#%")
-			client.sendRawMessage("HP#2#10#%")
 
 		case "HP": // penalties
 			split_msg := strings.Split(rawmsg, "#")
@@ -150,11 +147,11 @@ func handleClient(conn net.Conn) {
 			if val, err := strconv.Atoi(split_msg[2]); err == nil {
 				if split_msg[1] == "1" {
 					if err := client.area.setDefHP(val); err == nil {
-						client.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", val))
+						client.area.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", val))
 					}
 				} else if split_msg[1] == "2" {
 					if err := client.area.setProHP(val); err == nil {
-						client.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", val))
+						client.area.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", val))
 					}
 				}
 			}
