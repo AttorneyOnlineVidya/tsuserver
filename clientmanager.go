@@ -75,7 +75,14 @@ func (cl *Client) sendDone() {
 		CharsCheck - For each charid sends either a 0 if free or -1 if taken.
 	*/
 	charcheck := "CharsCheck"
-	charcheck += "#0#%" // TODO fix charcheck
+	for i := range config.Charlist {
+		if cl.area.isCharIDAvailable(i) {
+			charcheck += "#0"
+		} else {
+			charcheck += "#-1"
+		}
+	}
+	charcheck += "#%"
 
 	cl.sendRawMessage(charcheck)
 	cl.sendRawMessage("BN#gs4#%")

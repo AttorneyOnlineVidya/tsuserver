@@ -133,11 +133,20 @@ func handleClient(conn net.Conn) {
 			}
 
 		case "CC": // select character
-			char, _ := strconv.Atoi(strings.Split(rawmsg, "#")[2])
-			client.charid = char
-			// user selected character
-			client.sendRawMessage("PV#" + strconv.FormatUint(client.clientid, 10) +
-				"#CID#" + strconv.Itoa(client.charid) + "#%")
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 5 {
+				continue
+			}
+			if char, err := strconv.Atoi(split_msg[2]); err == nil {
+				// check if available
+				if !client.area.isCharIDAvailable(char) {
+					continue
+				}
+				client.charid = char
+				// user selected character
+				client.sendRawMessage("PV#" + strconv.FormatUint(client.clientid, 10) +
+					"#CID#" + strconv.Itoa(client.charid) + "#%")
+			}
 
 		case "HP": // penalties
 			split_msg := strings.Split(rawmsg, "#")

@@ -120,3 +120,20 @@ func (a *Area) playMusic(songname string, charid int, duration int) {
 		a.playMusic(songname, charid, duration)
 	}()
 }
+
+func (a *Area) isCharIDAvailable(charid int) bool {
+	if charid < 0 || charid >= len(config.Charlist) {
+		return false
+	}
+
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	for i := range a.clients {
+		if a.clients[i].charid == charid {
+			return false
+		}
+	}
+
+	return true
+}
