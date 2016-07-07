@@ -157,7 +157,13 @@ func handleClient(conn net.Conn) {
 			}
 
 		case "RT": // WT/CE buttons
-			break
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			if split_msg[1] == "testimony1" || split_msg[1] == "testimony2" {
+				client.area.sendRawMessage(fmt.Sprintf("RT#%s#%", split_msg[1]))
+			}
 
 		case "MC": // play music
 			if err := parseMusic(rawmsg, &client); err != nil {
