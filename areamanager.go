@@ -20,16 +20,19 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"sync"
+	"time"
 )
 
 type Area struct {
-	Areaid  int
-	Name    string
-	clients []*Client
-	lock    sync.Mutex
-	hp_def  int
-	hp_pro  int
+	Areaid     int
+	Name       string
+	clients    []*Client
+	lock       sync.Mutex
+	hp_def     int
+	hp_pro     int
+	song_timer *time.Timer
 }
 
 func (a *Area) sendRawMessage(msg string) {
@@ -97,4 +100,23 @@ func (a *Area) setProHP(hp int) error {
 	} else {
 		return errors.New("Invalid HP value.")
 	}
+}
+
+func (a *Area) playMusic(songname string, charid int, duration int) {
+	a.sendRawMessage(fmt.Sprintf("MC#%s#%d#%%", songname, charid))
+
+	if a.song_timer != nil {
+		a.song_timer.Stop()
+	}
+
+	if duration == -1 {
+		return
+	}
+
+	a.song_timer = time.NewTimer(time.Second * time.Duration(duration))
+
+	go func() {
+		<-a.song_timer.C
+		a.playMusic(songname, charid, duration)
+	}()
 }

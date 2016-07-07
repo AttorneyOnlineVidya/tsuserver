@@ -160,10 +160,8 @@ func handleClient(conn net.Conn) {
 			break
 
 		case "MC": // play music
-			if out_msg, err := parseMusic(rawmsg, &client); err != nil {
+			if err := parseMusic(rawmsg, &client); err != nil {
 				continue
-			} else {
-				client.area.sendRawMessage(out_msg)
 			}
 
 		case "MS": // IC message
@@ -194,24 +192,25 @@ MC#Prelude(T&T).mp3#11#%
 1 = full song name
 2 = char id
 */
-func parseMusic(rawmsg string, client *Client) (string, error) {
+func parseMusic(rawmsg string, client *Client) error {
 	split_msg := strings.Split(rawmsg, "#")
+	var duration int
 
 	// check message format
 	if len(split_msg) != 4 {
-		return "", errors.New("Message format is wrong.")
+		return errors.New("Message format is wrong.")
 	}
 
 	// prepare variables
 	songname := split_msg[1]
 	charid, err := strconv.Atoi(split_msg[2])
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// check if char id matches client
 	if charid != client.charid {
-		return "", errors.New("Char ID doesn't match client.")
+		return errors.New("Char ID doesn't match client.")
 	}
 
 	// check if song name is in the music list
@@ -219,16 +218,17 @@ func parseMusic(rawmsg string, client *Client) (string, error) {
 	for _, v := range config.Musiclist {
 		if v.Name == songname {
 			found = true
+			duration = v.Duration
 			break
 		}
 	}
 	if !found {
-		return "", errors.New("This song is not on the list.")
+		return errors.New("This song is not on the list.")
 	}
 
 	// message is fine
-	ret := fmt.Sprintf("MC#%s#%d#%%", songname, charid)
-	return ret, nil
+	client.area.playMusic(songname, charid, duration)
+	return nil
 }
 
 /*
