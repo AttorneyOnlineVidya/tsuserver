@@ -22,12 +22,16 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math"
+	"math/rand"
 	"strconv"
+	"time"
 )
 
 var crypt_const1 uint16 = 53761
 var crypt_const2 uint16 = 32618
 var crypt_key uint16
+
+var rng *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func calcKeys() {
 	var tmp int

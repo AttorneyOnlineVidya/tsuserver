@@ -26,13 +26,14 @@ import (
 )
 
 type Area struct {
-	Areaid     int
-	Name       string
-	clients    []*Client
-	lock       sync.Mutex
-	hp_def     int
-	hp_pro     int
-	song_timer *time.Timer
+	Areaid        int
+	Name          string
+	clients       []*Client
+	lock          sync.Mutex
+	hp_def        int
+	hp_pro        int
+	song_timer    *time.Timer
+	taken_charids map[int]*Client
 }
 
 func (a *Area) sendRawMessage(msg string) {
@@ -79,9 +80,10 @@ func (a *Area) removeClient(c *Client) {
 	}
 }
 
-func (a *Area) setDefaults() {
+func (a *Area) initialize() {
 	a.hp_def = 10
 	a.hp_pro = 10
+	a.taken_charids = make(map[int]*Client)
 }
 
 func (a *Area) setDefHP(hp int) error {
@@ -121,19 +123,48 @@ func (a *Area) playMusic(songname string, charid int, duration int) {
 	}()
 }
 
-func (a *Area) isCharIDAvailable(charid int) bool {
-	if charid < 0 || charid >= len(config.Charlist) {
-		return false
-	}
-
+func (a *Area) addTakenCharacter(id int, cl *Client) {
 	a.lock.Lock()
 	defer a.lock.Unlock()
 
-	for i := range a.clients {
-		if a.clients[i].charid == charid {
-			return false
+	a.taken_charids[id] = cl
+}
+
+func (a *Area) removeTakenCharacter(id int) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	delete(a.taken_charids, id)
+}
+
+func (a *Area) isCharIDAvailable(charid int) bool {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	_, ok := a.taken_charids[charid]
+	return !ok
+}
+
+func (a *Area) randomFreeCharacterID() (int, error) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	var avail_ids []int
+
+	for i := range config.Charlist {
+		if _, ok := a.taken_charids[i]; !ok {
+			avail_ids = append(avail_ids, i)
 		}
 	}
 
-	return true
+	if len(avail_ids) == 0 {
+		return 0, errors.New("No available IDs.")
+	}
+
+	randid := rng.Intn(len(avail_ids))
+	return randid, nil
+}
+
+func (a *Area) getClientByCharName(charname string) *Client {
+	return nil // TODO
 }

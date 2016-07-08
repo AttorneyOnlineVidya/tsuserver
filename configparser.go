@@ -87,6 +87,6 @@ func loadConfig() {
 
 	// set defaults
 	for i := range config.Arealist {
-		config.Arealist[i].setDefaults()
+		config.Arealist[i].initialize()
 	}
 }

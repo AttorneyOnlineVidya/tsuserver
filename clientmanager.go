@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
 	"sync"
 )
 
@@ -49,10 +50,23 @@ func (cl *Client) changeAreaID(areaid int) error {
 			// remove from old area if any
 			if cl.area != nil {
 				cl.area.removeClient(cl)
+				cl.area.removeTakenCharacter(cl.charid)
 			}
 			// add to new area
 			v.addClient(cl)
 			cl.area = v
+			// change to a random character if taken
+			if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
+				if id, err := cl.area.randomFreeCharacterID(); err == nil {
+					cl.charid = id
+					cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
+						"#CID#" + strconv.Itoa(id) + "#%")
+					cl.sendServerMessageOOC("Your character is taken, changing to a random one.")
+				} else {
+					return errors.New("Unable to switch, no free characters in target area.")
+				}
+			}
+			v.addTakenCharacter(cl.charid, cl)
 			// send current penalties
 			cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
 			cl.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", cl.area.hp_pro))
@@ -92,8 +106,24 @@ func (cl *Client) sendDone() {
 	cl.sendRawMessage("DONE#%")
 }
 
+func (cl *Client) changeCharacterID(id int) error {
+	// check if available
+	if cl.charid != id && !cl.area.isCharIDAvailable(id) {
+		return errors.New("That character is unavailable.")
+	}
+	// add character to area
+	cl.area.removeTakenCharacter(cl.charid)
+	cl.charid = id
+	cl.area.addTakenCharacter(id, cl)
+	// send new character to user
+	cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
+		"#CID#" + strconv.Itoa(cl.charid) + "#%")
+	return nil
+}
+
 func (cl *Client) disconnect() {
 	client_list.removeClient(cl)
+	cl.area.removeTakenCharacter(cl.charid)
 	cl.area.removeClient(cl)
 
 	cl.conn.Close()
