@@ -38,3 +38,17 @@ func cmdArea(cl *Client, args []string) {
 		cl.sendServerMessageOOC("Too many arguments.")
 	}
 }
+
+func cmdLogin(cl *Client, args []string) {
+	if len(args) != 1 {
+		cl.sendServerMessageOOC("Invalid arguments.")
+		return
+	}
+
+	if args[0] == config.Modpass {
+		cl.is_mod = true
+		cl.sendServerMessageOOC("Logged in as a moderator.")
+	} else {
+		cl.sendServerMessageOOC("Invalid password.")
+	}
+}

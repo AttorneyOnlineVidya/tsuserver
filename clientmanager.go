@@ -33,6 +33,7 @@ type Client struct {
 	charid   int
 	area     *Area
 	oocname  string
+	is_mod   bool
 }
 
 type ClientList struct {

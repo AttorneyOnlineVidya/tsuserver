@@ -50,6 +50,7 @@ func handleClient(conn net.Conn) {
 	client.conn = conn
 	client.area = nil
 	client.oocname = ""
+	client.is_mod = false
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -425,6 +426,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		switch strings.ToLower(cmd) {
 		case "area":
 			cmdArea(client, args)
+		case "login":
+			cmdLogin(client, args)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
