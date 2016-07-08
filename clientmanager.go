@@ -43,6 +43,10 @@ type ClientList struct {
 // ================
 
 func (cl *Client) changeAreaID(areaid int) error {
+	// check if the target area is the same
+	if cl.area != nil && cl.area.Areaid == areaid {
+		return errors.New("Target area is the same as the current one.")
+	}
 	// find the correct area pointer
 	for i := range config.Arealist {
 		v := &config.Arealist[i]
@@ -50,7 +54,7 @@ func (cl *Client) changeAreaID(areaid int) error {
 			last_charid := cl.charid
 			// change to a random character if taken
 			if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
-				if id, err := cl.area.randomFreeCharacterID(); err == nil {
+				if id, err := v.randomFreeCharacterID(); err == nil {
 					cl.charid = id
 					cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
 						"#CID#" + strconv.Itoa(id) + "#%")
@@ -66,8 +70,8 @@ func (cl *Client) changeAreaID(areaid int) error {
 			}
 			// add to new area
 			v.addClient(cl)
-			cl.area = v
 			v.addTakenCharacter(cl.charid, cl)
+			cl.area = v
 			// send current penalties
 			cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
 			cl.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", cl.area.hp_pro))
