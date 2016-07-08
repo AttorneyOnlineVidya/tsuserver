@@ -47,14 +47,7 @@ func (cl *Client) changeAreaID(areaid int) error {
 	for i := range config.Arealist {
 		v := &config.Arealist[i]
 		if v.Areaid == areaid {
-			// remove from old area if any
-			if cl.area != nil {
-				cl.area.removeClient(cl)
-				cl.area.removeTakenCharacter(cl.charid)
-			}
-			// add to new area
-			v.addClient(cl)
-			cl.area = v
+			last_charid := cl.charid
 			// change to a random character if taken
 			if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
 				if id, err := cl.area.randomFreeCharacterID(); err == nil {
@@ -66,6 +59,14 @@ func (cl *Client) changeAreaID(areaid int) error {
 					return errors.New("Unable to switch, no free characters in target area.")
 				}
 			}
+			// remove from old area if any
+			if cl.area != nil {
+				cl.area.removeClient(cl)
+				cl.area.removeTakenCharacter(last_charid)
+			}
+			// add to new area
+			v.addClient(cl)
+			cl.area = v
 			v.addTakenCharacter(cl.charid, cl)
 			// send current penalties
 			cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
