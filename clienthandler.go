@@ -159,6 +159,20 @@ func handleClient(conn net.Conn) {
 				}
 			}
 
+		case "opMUTE": // /mute with guard
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			cmdMute(&client, split_msg[1])
+
+		case "opunMUTE": // /unmute with guard
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			cmdUnmute(&client, split_msg[1])
+
 		case "RT": // WT/CE buttons
 			split_msg := strings.Split(rawmsg, "#")
 			if len(split_msg) != 3 {
@@ -421,6 +435,11 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		// prepare variables
 		cmd := split_cmd[0]
 		args := split_cmd[1:]
+		target := ""
+
+		if len(args) > 0 {
+			target = strings.Join(args, " ")
+		}
 
 		// OOC command handling
 		switch strings.ToLower(cmd) {
@@ -428,6 +447,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdArea(client, args)
 		case "login":
 			cmdLogin(client, args)
+		case "mute":
+			cmdMute(client, target)
+		case "unmute":
+			cmdUnmute(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

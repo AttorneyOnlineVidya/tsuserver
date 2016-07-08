@@ -34,6 +34,7 @@ type Client struct {
 	area     *Area
 	oocname  string
 	is_mod   bool
+	lock     sync.Mutex
 }
 
 type ClientList struct {
@@ -52,6 +53,9 @@ func (cl *Client) changeAreaID(areaid int) error {
 	for i := range config.Arealist {
 		v := &config.Arealist[i]
 		if v.Areaid == areaid {
+			cl.lock.Lock()
+			defer cl.lock.Unlock()
+
 			last_charid := cl.charid
 			// change to a random character if taken
 			if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
@@ -113,6 +117,9 @@ func (cl *Client) sendDone() {
 }
 
 func (cl *Client) changeCharacterID(id int) error {
+	cl.lock.Lock()
+	defer cl.lock.Unlock()
+
 	// check if available
 	if cl.charid != id && !cl.area.isCharIDAvailable(id) {
 		return errors.New("That character is unavailable.")
@@ -149,6 +156,26 @@ func (cl Client) getAreaName() string {
 	return ""
 }
 
+func (cl Client) getPrintableAreaList() string {
+	var ret string
+	for _, a := range config.Arealist {
+		cnt := a.getCharCount()
+		ret += "\r\nArea " + strconv.Itoa(a.Areaid) + ": " +
+			a.Name + " (" + strconv.Itoa(cnt) + " user"
+		if cnt != 1 {
+			ret += "s"
+		}
+		ret += ")"
+		if cl.area.Areaid == a.Areaid {
+			ret += " (*)"
+		}
+	}
+	fmt.Println(ret)
+	return ret
+}
+
+// ================
+
 func (clist *ClientList) onlineCharacters() int {
 	clist.lock.Lock()
 	defer clist.lock.Unlock()
@@ -179,4 +206,17 @@ func (clist *ClientList) removeClient(c *Client) {
 			return
 		}
 	}
+}
+
+func (clist *ClientList) findAllTargets(curclient *Client, target string) []*Client {
+	var ret []*Client
+
+	if len(target) == 0 {
+		return ret
+	}
+
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	return ret
 }

@@ -22,7 +22,7 @@ import "strconv"
 
 func cmdArea(cl *Client, args []string) {
 	if len(args) == 0 {
-		cl.sendServerMessageOOC(getPrintableAreaList())
+		cl.sendServerMessageOOC(cl.getPrintableAreaList())
 	} else if len(args) == 1 {
 		targetarea, err := strconv.Atoi(args[0])
 		if err != nil {
@@ -50,5 +50,20 @@ func cmdLogin(cl *Client, args []string) {
 		cl.sendServerMessageOOC("Logged in as a moderator.")
 	} else {
 		cl.sendServerMessageOOC("Invalid password.")
+	}
+}
+
+func cmdMute(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	client_list.findAllTargets(cl, target)
+}
+
+func cmdUnmute(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
 	}
 }
