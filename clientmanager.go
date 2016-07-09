@@ -252,6 +252,7 @@ func (clist *ClientList) findTargetsByOOC(cl *Client, target string) []*Client {
 	return ret
 }
 
+// searches in the order IP -> Char name -> OOC Name, returning on first match
 func (clist *ClientList) findAllTargets(cl *Client, target string) []*Client {
 	if len(target) == 0 {
 		return []*Client{}
