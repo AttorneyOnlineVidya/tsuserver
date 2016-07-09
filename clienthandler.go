@@ -65,6 +65,7 @@ func handleClient(conn net.Conn) {
 	for {
 		if n, err = conn.Read(buf); err != nil {
 			log.Printf("Closed connection from %s.", conn.RemoteAddr().String())
+			ServerToLog("Closed connection from " + conn.RemoteAddr().String())
 			client.disconnect()
 			return
 		}

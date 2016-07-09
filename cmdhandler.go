@@ -36,7 +36,7 @@ func cmdArea(cl *Client, args []string) {
 			cl.sendServerMessageOOC(err.Error())
 		} else {
 			cl.sendServerMessageOOC("Changed area to " + cl.area.Name + ".")
-			writeToLog(cl, "Changed area to "+cl.area.Name+".")
+			ClientToLog(cl, "Changed area to "+cl.area.Name+".")
 		}
 	} else {
 		cl.sendServerMessageOOC("Too many arguments.")
