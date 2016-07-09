@@ -78,7 +78,7 @@ func cmdBgLock(cl *Client, args []string) {
 		} else {
 			cl.area.bglock = true
 			cl.area.sendServerMessageOOC("Background locked.")
-			writeClientLog(cl, "Locked the background..")
+			writeClientLog(cl, "Locked the background.")
 		}
 	} else {
 		cl.sendServerMessageOOC("You do not have permission to use that")
