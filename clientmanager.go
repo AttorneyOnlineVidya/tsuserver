@@ -118,6 +118,13 @@ func (cl *Client) sendDone() {
 	writeClientLog(cl, "CLIENT CONNECTED")
 }
 
+func (cl *Client) charSelect() {
+	cl.area.removeTakenCharacter(cl.charid)
+	cl.charid = -1
+
+	cl.sendDone()
+}
+
 func (cl *Client) changeCharacterID(id int) error {
 	cl.lock.Lock()
 	defer cl.lock.Unlock()

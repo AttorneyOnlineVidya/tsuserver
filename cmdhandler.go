@@ -175,8 +175,12 @@ func cmdSwitch(cl *Client, name string) {
 			cl.sendServerMessageOOC(err.Error())
 		} else {
 			cl.sendServerMessageOOC("Successfully changed character.")
-			writeClientLog(fmt.Sprintf("Changed character from %s to %s.",
+			writeClientLog(cl, fmt.Sprintf("Changed character from %s to %s.",
 				oldchar, cl.getCharacterName()))
 		}
 	}
+}
+
+func cmdCharselect(cl *Client, args []string) {
+	cl.charSelect()
 }
