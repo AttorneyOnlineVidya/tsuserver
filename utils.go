@@ -139,3 +139,18 @@ func getCIDfromName(charname string) (int, error) {
 	}
 	return -1, errors.New("Character could not be found")
 }
+
+func firstWords(value string, count int) string {
+	// Loop over all indexes in the string.
+	for i := range value {
+		// If we encounter a space, reduce the count.
+		if value[i] == ' ' {
+			count -= 1
+			// When no more words required, return a substring.
+			if count == 0 {
+				return value[0:i]
+			}
+		}
+	}
+	return value
+}

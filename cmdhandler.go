@@ -184,3 +184,17 @@ func cmdSwitch(cl *Client, name string) {
 func cmdCharselect(cl *Client, args []string) {
 	cl.charSelect()
 }
+
+func cmdPM(cl *Client, target string) {
+	cnt := 0
+	name := firstWords(target, 1)
+	for _, v := range client_list.findAllTargets(cl, name) {
+		v.sendServerMessageOOC(fmt.Sprintf("PM %s to you: %s", cl.oocname, target[len(name):]))
+		cl.sendServerMessageOOC(fmt.Sprintf("PM You to %s: %s", name, target[len(name):]))
+		writeClientLog(cl, fmt.Sprintf("Sent a PM to %s/%s in %s", v.getCharacterName(), v.oocname, v.getAreaName()))
+		cnt++
+	}
+	if cnt == 0 {
+		cl.sendServerMessageOOC(fmt.Sprintf("Could not find %s", name))
+	}
+}
