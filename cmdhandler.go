@@ -166,7 +166,8 @@ func cmdKick(cl *Client, target string) {
 	}
 }
 
-func cmdChange(cl *Client, name string) {
+func cmdSwitch(cl *Client, name string) {
+	oldchar := cl.getCharacterName()
 	if charid, err := getCIDfromName(name); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
@@ -174,6 +175,8 @@ func cmdChange(cl *Client, name string) {
 			cl.sendServerMessageOOC(err.Error())
 		} else {
 			cl.sendServerMessageOOC("Successfully changed character.")
+			writeClientLog(fmt.Sprintf("Changed character from %s to %s.",
+				oldchar, cl.getCharacterName()))
 		}
 	}
 }
