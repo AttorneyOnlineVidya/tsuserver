@@ -217,16 +217,61 @@ func (clist *ClientList) findTargetByChar(cl *Client, target string) *Client {
 	return cl.area.getClientByCharName(target)
 }
 
-func (clist *ClientList) findAllTargets(cl *Client, target string) []*Client {
+// returns a list of clients with the given IP
+func (clist *ClientList) findTargetsByIP(cl *Client, targetip string) []*Client {
 	var ret []*Client
 
-	if len(target) == 0 {
+	if !cl.is_mod {
 		return ret
 	}
 
-	if cl := clist.findTargetByChar(cl, target); cl != nil {
-		ret = append(ret, cl)
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	ip := net.ParseIP(targetip)
+
+	for _, v := range clist.clients {
+		if v.IP.Equal(ip) {
+			ret = append(ret, v)
+		}
 	}
 
 	return ret
+}
+
+// returns a list of clients with the given OOC name
+func (clist *ClientList) findTargetsByOOC(cl *Client, target string) []*Client {
+	var ret []*Client
+
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	for _, v := range clist.clients {
+		if v.oocname == target {
+			ret = append(ret, v)
+		}
+	}
+
+	return ret
+}
+
+// searches in the order IP -> Char name -> OOC Name, returning on first match
+func (clist *ClientList) findAllTargets(cl *Client, target string) []*Client {
+	if len(target) == 0 {
+		return []*Client{}
+	}
+
+	if cl := clist.findTargetsByIP(cl, target); len(cl) > 0 {
+		return cl
+	}
+
+	if cl := clist.findTargetByChar(cl, target); cl != nil {
+		return []*Client{cl}
+	}
+
+	if cl := clist.findTargetsByOOC(cl, target); len(cl) > 0 {
+		return cl
+	}
+
+	return []*Client{}
 }

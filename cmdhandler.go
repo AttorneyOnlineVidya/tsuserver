@@ -138,3 +138,22 @@ func cmdUnmute(cl *Client, target string) {
 		cl.sendServerMessageOOC(fmt.Sprintf("Unmuted %d client(s).", cnt))
 	}
 }
+
+func cmdKick(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	cnt := 0
+	for _, v := range client_list.findAllTargets(cl, target) {
+		v.disconnect()
+		cnt++
+	}
+
+	if cnt == 0 {
+		cl.sendServerMessageOOC("No targets found.")
+	} else {
+		cl.sendServerMessageOOC(fmt.Sprintf("Kicked %d client(s).", cnt))
+	}
+}
