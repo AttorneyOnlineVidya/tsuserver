@@ -3,7 +3,9 @@ Defaultarea = 0
 [[Arealist]]
 Areaid = 0
 Name = "Basement"
+Background = "gs4"
 
 [[Arealist]]
 Areaid = 1
 Name = "Courtroom 1"
+Background = "gs4"

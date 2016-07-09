@@ -34,16 +34,17 @@ type Song struct {
 }
 
 type Config struct {
-	Port         int
-	Slots        int
-	Charlist     []string
-	Musiclist    []Song
-	Arealist     []Area
-	Defaultarea  int
-	Timeout      int
-	Reservedname string
-	Modpass      string
-	Guardpass    string
+	Port           int
+	Slots          int
+	Charlist       []string
+	Musiclist      []Song
+	Arealist       []Area
+	Backgroundlist []string
+	Defaultarea    int
+	Timeout        int
+	Reservedname   string
+	Modpass        string
+	Guardpass      string
 }
 
 var config Config
@@ -59,6 +60,10 @@ func loadConfig() {
 	}
 
 	if _, err := toml.DecodeFile("./config/areas.toml", &config); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := toml.DecodeFile("./config/backgrounds.toml", &config); err != nil {
 		log.Fatal(err)
 	}
 

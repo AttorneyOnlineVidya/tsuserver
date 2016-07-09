@@ -109,3 +109,12 @@ func loadMusicPages(perpage int) []string {
 func isValidCharID(id int) bool {
 	return id >= 0 && id < len(config.Charlist)
 }
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}

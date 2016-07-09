@@ -36,10 +36,44 @@ func cmdArea(cl *Client, args []string) {
 			cl.sendServerMessageOOC(err.Error())
 		} else {
 			cl.sendServerMessageOOC("Changed area to " + cl.area.Name + ".")
-			ClientToLog(cl, "Changed area to "+cl.area.Name+".")
+			writeClientLog(cl, "Changed area to "+cl.area.Name+".")
 		}
 	} else {
 		cl.sendServerMessageOOC("Too many arguments.")
+	}
+}
+
+func cmdBackground(cl *Client, args []string) {
+	if len(args) == 0 {
+		cl.sendServerMessageOOC("The current background is " + cl.area.Background)
+	} else if cl.area.bglock == true {
+		if cl.is_mod == true {
+			cl.area.Background = args[0]
+			cl.area.sendRawMessage("BN#" + args[0] + "#%")
+			cl.sendServerMessageOOC("changed background to " + args[0])
+			writeClientLog(cl, "changed background to "+args[0])
+		} else {
+			cl.sendServerMessageOOC("A moderator has locked the background")
+		}
+	} else if stringInSlice(args[0], config.Backgroundlist) == true && cl.area.bglock == false {
+		cl.area.Background = args[0]
+		cl.area.sendRawMessage("BN#" + args[0] + "#%")
+		cl.sendServerMessageOOC("changed background to " + args[0])
+		writeClientLog(cl, "changed background to "+args[0])
+	} else {
+		cl.sendServerMessageOOC("That background cannot be found or is unavailable")
+	}
+}
+
+func cmdBgLock(cl *Client, args []string) {
+	if lock, err := strconv.ParseBool(args[0]); err == nil {
+		if cl.is_mod == true {
+			cl.area.bglock = lock
+			cl.sendServerMessageOOC("Background lock is now " + args[0])
+			writeClientLog(cl, "has set the background lock to "+args[0])
+		} else {
+			cl.sendServerMessageOOC("You do not have permission to use that")
+		}
 	}
 }
 
@@ -52,8 +86,10 @@ func cmdLogin(cl *Client, args []string) {
 	if args[0] == config.Modpass {
 		cl.is_mod = true
 		cl.sendServerMessageOOC("Logged in as a moderator.")
+		writeClientLog(cl, "Logged in as a moderator.")
 	} else {
 		cl.sendServerMessageOOC("Invalid password.")
+		writeClientLog(cl, "Tried to use mod login")
 	}
 }
 
@@ -67,6 +103,7 @@ func cmdMute(cl *Client, target string) {
 	for _, v := range client_list.findAllTargets(cl, target) {
 		if !v.muted {
 			v.muted = true
+			writeClientLog(cl, " muted"+v.IP.String())
 			v.sendServerMessageOOC("You have been muted by a moderator.")
 			cnt++
 		}
@@ -89,6 +126,7 @@ func cmdUnmute(cl *Client, target string) {
 	for _, v := range client_list.findAllTargets(cl, target) {
 		if v.muted {
 			v.muted = false
+			writeClientLog(cl, " unmuted"+v.IP.String())
 			v.sendServerMessageOOC("You have been unmuted by a moderator.")
 			cnt++
 		}

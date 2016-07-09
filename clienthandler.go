@@ -65,7 +65,7 @@ func handleClient(conn net.Conn) {
 	for {
 		if n, err = conn.Read(buf); err != nil {
 			log.Printf("Closed connection from %s.", conn.RemoteAddr().String())
-			ServerToLog("Closed connection from " + conn.RemoteAddr().String())
+			writeServerLog("Closed connection from " + conn.RemoteAddr().String())
 			client.disconnect()
 			return
 		}
@@ -153,10 +153,13 @@ func handleClient(conn net.Conn) {
 				if split_msg[1] == "1" {
 					if err := client.area.setDefHP(val); err == nil {
 						client.area.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", val))
+						writeClientLog(&client, "changed health bar")
+
 					}
 				} else if split_msg[1] == "2" {
 					if err := client.area.setProHP(val); err == nil {
 						client.area.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", val))
+						writeClientLog(&client, "changed health bar")
 					}
 				}
 			}
@@ -182,6 +185,7 @@ func handleClient(conn net.Conn) {
 			}
 			if split_msg[1] == "testimony1" || split_msg[1] == "testimony2" {
 				client.area.sendRawMessage(fmt.Sprintf("RT#%s#%", split_msg[1]))
+				writeClientLog(&client, "Used WT/CE")
 			}
 
 		case "MC": // play music
@@ -258,6 +262,7 @@ func parseMusic(rawmsg string, client *Client) error {
 
 	// message is fine
 	client.area.playMusic(songname, charid, duration)
+	writeClientLog(client, " changed music to "+songname)
 	return nil
 }
 
@@ -397,7 +402,7 @@ func parseMessageIC(rawmsg string, client *Client) (string, error) {
 	ret := fmt.Sprintf("MS#%s#%s#%s#%s#%s#%s#%s#%s#%d#%s#%s#%s#%d#%s#%s#%%",
 		msgtype, preanim, foldername, anim, text, pos, sfx, animtype,
 		client.charid, sfxdelay, button, unk, client.charid, ding, color)
-	ClientToLog(client, "["+client.getCharacterName()+"@"+client.getAreaName()+"]"+text)
+	writeClientLog(client, "[IC] "+text)
 
 	return ret, nil
 }
@@ -466,12 +471,16 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdUnmute(client, target)
 		case "kick":
 			cmdKick(client, target)
+		case "bg":
+			cmdBackground(client, args)
+		case "bglock":
+			cmdBgLock(client, args)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
 	} else {
 		ret = fmt.Sprintf("CT#%s#%s#%%", client.oocname, text)
-		ClientToLog(client, "[OOC]["+client.oocname+"]"+text)
+		writeClientLog(client, "[OOC] "+text) //OOC chat will have [OOC] in log
 	}
 	return ret, nil
 }

@@ -32,7 +32,7 @@ func main() {
 		log.Fatal("An error occurred starting the listening server.")
 	}
 	log.Print("Starting server.")
-	ServerToLog("Starting server.")
+	writeServerLog("Starting server.")
 	calcKeys()
 
 	for {
@@ -42,7 +42,7 @@ func main() {
 			continue
 		}
 		log.Printf("Accepted connection from %s.", conn.RemoteAddr().String())
-		ServerToLog("Accepted connection from " + conn.RemoteAddr().String())
+		writeServerLog("Accepted connection from " + conn.RemoteAddr().String())
 		go handleClient(conn)
 	}
 }

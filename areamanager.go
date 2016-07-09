@@ -28,6 +28,8 @@ import (
 type Area struct {
 	Areaid        int
 	Name          string
+	Background    string
+	bglock        bool
 	clients       []*Client
 	lock          sync.Mutex
 	hp_def        int
