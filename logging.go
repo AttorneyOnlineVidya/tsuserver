@@ -2,9 +2,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
 )
+
+var clientlog_filename string = "logs/client.log"
+var serverlog_filename string = "logs/server.log"
 
 /*Logs client actions or messages
 ClientToLog (Client pointer, Text string)
@@ -12,36 +16,39 @@ Example: ClientToLog(cl, "Changed area to "+cl.area.Name+".")
 Output: [127.0.0.1      ][2016-07-09 12:58:03]Changed area to Courtroom 1.
 */
 func ClientToLog(cl *Client, logstr string) {
-	if !FileExists("ServerLog") {
-		CreateFile("ServerLog")
+	if !FileExists(clientlog_filename) {
+		CreateFile(clientlog_filename)
 	}
-	logfile, err := os.OpenFile("ServerLog", os.O_APPEND, 0666)
+	logfile, err := os.OpenFile(clientlog_filename, os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
 	defer logfile.Close()
-	ipstring := cl.IP.String() + "        " //Align the IP so the logs don't look wonky
-	timeStamp := time.Now().Format("2006-01-02 15:04:05")
-	var fullstring string = "[" + ipstring[:15] + "][" + timeStamp + "]" + logstr + "\r\n"
+
+	timestamp := time.Now().UTC().Format("2006-01-02 15:04:05 UTC")
+	fullstring := fmt.Sprintf("[%-15s][%s]%s\n", cl.IP.String(), timestamp, logstr)
+
 	logfile.WriteString(fullstring)
 }
 
 /*Logs server actions or messages
 ServerToLog (Text string)
 Example: ServerToLog("Starting server.")
-Output: [$HOST          ][2016-07-09 12:51:26]Starting server.
+Output: [2016-07-09 12:51:26]Starting server.
 */
 func ServerToLog(logstr string) {
-	if !FileExists("ServerLog") {
-		CreateFile("ServerLog")
+	if !FileExists(serverlog_filename) {
+		CreateFile(serverlog_filename)
 	}
-	logfile, err := os.OpenFile("ServerLog", os.O_APPEND, 0666)
+	logfile, err := os.OpenFile(serverlog_filename, os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
 	defer logfile.Close()
-	timeStamp := time.Now().Format("2006-01-02 15:04:05")
-	var fullstring string = "[$HOST          ][" + timeStamp + "]" + logstr + "\r\n"
+
+	timestamp := time.Now().UTC().Format("2006-01-02 15:04:05 UTC")
+	fullstring := fmt.Sprintf("[%s]%s\n", timestamp, logstr)
+
 	logfile.WriteString(fullstring)
 }
 
