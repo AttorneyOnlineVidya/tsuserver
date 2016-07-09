@@ -34,6 +34,7 @@ type Client struct {
 	area     *Area
 	oocname  string
 	is_mod   bool
+	muted    bool
 	lock     sync.Mutex
 }
 
@@ -208,15 +209,21 @@ func (clist *ClientList) removeClient(c *Client) {
 	}
 }
 
-func (clist *ClientList) findAllTargets(curclient *Client, target string) []*Client {
+// returns the client who's using target character in the same area
+func (clist *ClientList) findTargetByChar(cl *Client, target string) *Client {
+	return cl.area.getClientByCharName(target)
+}
+
+func (clist *ClientList) findAllTargets(cl *Client, target string) []*Client {
 	var ret []*Client
 
 	if len(target) == 0 {
 		return ret
 	}
 
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	if cl := clist.findTargetByChar(cl, target); cl != nil {
+		ret = append(ret, cl)
+	}
 
 	return ret
 }

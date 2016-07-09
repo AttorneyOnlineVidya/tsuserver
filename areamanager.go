@@ -166,5 +166,18 @@ func (a *Area) randomFreeCharacterID() (int, error) {
 }
 
 func (a *Area) getClientByCharName(charname string) *Client {
-	return nil // TODO
+	for i := range config.Charlist {
+		if config.Charlist[i] == charname {
+			a.lock.Lock()
+			defer a.lock.Unlock()
+
+			if cl, ok := a.taken_charids[i]; ok {
+				return cl
+			}
+
+			return nil
+		}
+	}
+
+	return nil
 }

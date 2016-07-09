@@ -51,6 +51,7 @@ func handleClient(conn net.Conn) {
 	client.area = nil
 	client.oocname = ""
 	client.is_mod = false
+	client.muted = false
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -219,6 +220,11 @@ func parseMusic(rawmsg string, client *Client) error {
 	split_msg := strings.Split(rawmsg, "#")
 	var duration int
 
+	// check if client is muted
+	if client.muted {
+		return errors.New("Cannot play music, client is muted.")
+	}
+
 	// check message format
 	if len(split_msg) != 4 {
 		return errors.New("Message format is wrong.")
@@ -279,6 +285,11 @@ MS#chat#damage#Portsman#damaged#text#pro#sfx-stab#1#20#1#0#0#20#0#0#%
 */
 func parseMessageIC(rawmsg string, client *Client) (string, error) {
 	split_msg := strings.Split(rawmsg, "#")
+
+	// check if client is muted
+	if client.muted {
+		return "", errors.New("Cannot send message, client is muted.")
+	}
 
 	// check message format
 	if len(split_msg) != 17 {
