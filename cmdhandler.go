@@ -157,3 +157,12 @@ func cmdKick(cl *Client, target string) {
 		cl.sendServerMessageOOC(fmt.Sprintf("Kicked %d client(s).", cnt))
 	}
 }
+
+func cmdSwitch(cl *Client, args []string) {
+	if stringInSlice(args[0], config.Charlist) == true {
+		var charid int = getCIDfromName(args[0])
+		cl.changeCharacterID(charid)
+	} else {
+		cl.sendServerMessageOOC("That character could not be found")
+	}
+}

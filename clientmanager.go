@@ -124,6 +124,7 @@ func (cl *Client) changeCharacterID(id int) error {
 
 	// check if available
 	if cl.charid != id && !cl.area.isCharIDAvailable(id) {
+		cl.sendServerMessageOOC("That character is unavailable.")
 		return errors.New("That character is unavailable.")
 	}
 	// add character to area

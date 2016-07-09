@@ -477,6 +477,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdBackground(client, args)
 		case "bglock":
 			cmdBgLock(client, args)
+		case "switch":
+			cmdSwitch(client, args)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

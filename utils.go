@@ -118,3 +118,12 @@ func stringInSlice(a string, list []string) bool {
 	}
 	return false
 }
+
+func getCIDfromName(charname string) int {
+	for i, c := range config.Charlist {
+		if c == charname {
+			return i
+		}
+	}
+	return 0
+}
