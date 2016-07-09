@@ -167,10 +167,10 @@ func cmdKick(cl *Client, target string) {
 }
 
 func cmdSwitch(cl *Client, args []string) {
-	if stringInSlice(args[0], config.Charlist) == true {
-		var charid int = getCIDfromName(args[0])
-		cl.changeCharacterID(charid)
+	charid, err := getCIDfromName(args[0])
+	if err != nil {
+		cl.sendServerMessageOOC("Could not find that character.")
 	} else {
-		cl.sendServerMessageOOC("That character could not be found")
+		cl.changeCharacterID(charid)
 	}
 }

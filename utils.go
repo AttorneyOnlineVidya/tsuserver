@@ -127,11 +127,11 @@ func stringInSlice(a string, list []string, case_sensitive bool) (string, error)
 	return "", errors.New("String not found.")
 }
 
-func getCIDfromName(charname string) int {
+func getCIDfromName(charname string) (int, error) {
 	for i, c := range config.Charlist {
-		if c == charname {
-			return i
+		if strings.ToLower(c) == strings.ToLower(charname) {
+			return i, nil
 		}
 	}
-	return 0
+	return -1, errors.New("Character could not be found")
 }
