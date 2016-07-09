@@ -18,11 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package main
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 func cmdArea(cl *Client, args []string) {
 	if len(args) == 0 {
-		cl.sendServerMessageOOC(getPrintableAreaList())
+		cl.sendServerMessageOOC(cl.getPrintableAreaList())
 	} else if len(args) == 1 {
 		targetarea, err := strconv.Atoi(args[0])
 		if err != nil {
@@ -37,5 +40,63 @@ func cmdArea(cl *Client, args []string) {
 		}
 	} else {
 		cl.sendServerMessageOOC("Too many arguments.")
+	}
+}
+
+func cmdLogin(cl *Client, args []string) {
+	if len(args) != 1 {
+		cl.sendServerMessageOOC("Invalid arguments.")
+		return
+	}
+
+	if args[0] == config.Modpass {
+		cl.is_mod = true
+		cl.sendServerMessageOOC("Logged in as a moderator.")
+	} else {
+		cl.sendServerMessageOOC("Invalid password.")
+	}
+}
+
+func cmdMute(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	cnt := 0
+	for _, v := range client_list.findAllTargets(cl, target) {
+		if !v.muted {
+			v.muted = true
+			v.sendServerMessageOOC("You have been muted by a moderator.")
+			cnt++
+		}
+	}
+
+	if cnt == 0 {
+		cl.sendServerMessageOOC("No unmuted targets found.")
+	} else {
+		cl.sendServerMessageOOC(fmt.Sprintf("Muted %d client(s).", cnt))
+	}
+}
+
+func cmdUnmute(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	cnt := 0
+	for _, v := range client_list.findAllTargets(cl, target) {
+		if v.muted {
+			v.muted = false
+			v.sendServerMessageOOC("You have been unmuted by a moderator.")
+			cnt++
+		}
+	}
+
+	if cnt == 0 {
+		cl.sendServerMessageOOC("No muted targets found.")
+	} else {
+		cl.sendServerMessageOOC(fmt.Sprintf("Unmuted %d client(s).", cnt))
 	}
 }

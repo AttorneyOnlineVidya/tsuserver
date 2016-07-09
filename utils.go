@@ -20,7 +20,6 @@ package main
 
 import (
 	"encoding/hex"
-	"fmt"
 	"math"
 	"math/rand"
 	"strconv"
@@ -109,14 +108,4 @@ func loadMusicPages(perpage int) []string {
 
 func isValidCharID(id int) bool {
 	return id >= 0 && id < len(config.Charlist)
-}
-
-func getPrintableAreaList() string {
-	var ret string
-	for _, a := range config.Arealist {
-		ret += fmt.Sprintf("\r\nArea %d: %s (%d user)",
-			a.Areaid, a.Name, a.getCharCount())
-	}
-	fmt.Println(ret)
-	return ret
 }

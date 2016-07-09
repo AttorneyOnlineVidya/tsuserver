@@ -50,6 +50,8 @@ func handleClient(conn net.Conn) {
 	client.conn = conn
 	client.area = nil
 	client.oocname = ""
+	client.is_mod = false
+	client.muted = false
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -158,6 +160,20 @@ func handleClient(conn net.Conn) {
 				}
 			}
 
+		case "opMUTE": // /mute with guard
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			cmdMute(&client, split_msg[1])
+
+		case "opunMUTE": // /unmute with guard
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			cmdUnmute(&client, split_msg[1])
+
 		case "RT": // WT/CE buttons
 			split_msg := strings.Split(rawmsg, "#")
 			if len(split_msg) != 3 {
@@ -203,6 +219,11 @@ MC#Prelude(T&T).mp3#11#%
 func parseMusic(rawmsg string, client *Client) error {
 	split_msg := strings.Split(rawmsg, "#")
 	var duration int
+
+	// check if client is muted
+	if client.muted {
+		return errors.New("Cannot play music, client is muted.")
+	}
 
 	// check message format
 	if len(split_msg) != 4 {
@@ -264,6 +285,11 @@ MS#chat#damage#Portsman#damaged#text#pro#sfx-stab#1#20#1#0#0#20#0#0#%
 */
 func parseMessageIC(rawmsg string, client *Client) (string, error) {
 	split_msg := strings.Split(rawmsg, "#")
+
+	// check if client is muted
+	if client.muted {
+		return "", errors.New("Cannot send message, client is muted.")
+	}
 
 	// check message format
 	if len(split_msg) != 17 {
@@ -420,11 +446,22 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		// prepare variables
 		cmd := split_cmd[0]
 		args := split_cmd[1:]
+		target := ""
+
+		if len(args) > 0 {
+			target = strings.Join(args, " ")
+		}
 
 		// OOC command handling
 		switch strings.ToLower(cmd) {
 		case "area":
 			cmdArea(client, args)
+		case "login":
+			cmdLogin(client, args)
+		case "mute":
+			cmdMute(client, target)
+		case "unmute":
+			cmdUnmute(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
