@@ -166,11 +166,14 @@ func cmdKick(cl *Client, target string) {
 	}
 }
 
-func cmdSwitch(cl *Client, args []string) {
-	charid, err := getCIDfromName(args[0])
-	if err != nil {
-		cl.sendServerMessageOOC("Could not find that character.")
+func cmdChange(cl *Client, name string) {
+	if charid, err := getCIDfromName(name); err != nil {
+		cl.sendServerMessageOOC(err.Error())
 	} else {
-		cl.changeCharacterID(charid)
+		if err := cl.changeCharacterID(charid); err != nil {
+			cl.sendServerMessageOOC(err.Error())
+		} else {
+			cl.sendServerMessageOOC("Successfully changed character.")
+		}
 	}
 }

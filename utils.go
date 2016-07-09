@@ -128,6 +128,10 @@ func stringInSlice(a string, list []string, case_sensitive bool) (string, error)
 }
 
 func getCIDfromName(charname string) (int, error) {
+	if len(charname) == 0 {
+		return -1, errors.New("Empty character name.")
+	}
+
 	for i, c := range config.Charlist {
 		if strings.ToLower(c) == strings.ToLower(charname) {
 			return i, nil

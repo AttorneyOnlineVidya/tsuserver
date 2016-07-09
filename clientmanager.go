@@ -122,9 +122,13 @@ func (cl *Client) changeCharacterID(id int) error {
 	cl.lock.Lock()
 	defer cl.lock.Unlock()
 
+	// check if valid
+	if !isValidCharID(id) {
+		return errors.New("Invalid character ID.")
+	}
+
 	// check if available
 	if cl.charid != id && !cl.area.isCharIDAvailable(id) {
-		cl.sendServerMessageOOC("That character is unavailable.")
 		return errors.New("That character is unavailable.")
 	}
 	// add character to area
