@@ -392,6 +392,8 @@ func parseMessageIC(rawmsg string, client *Client) (string, error) {
 	// check color
 	if col, err := strconv.Atoi(color); err != nil {
 		return "", errors.New("Color must be a number.")
+	} else if col == 2 && client.is_mod == false { //Reserves redtext for mod only
+		color = "0"
 	} else {
 		if !(col >= 0 && col <= 4) {
 			return "", errors.New("Invalid color ID.")
