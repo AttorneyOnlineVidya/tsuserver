@@ -43,6 +43,40 @@ func cmdArea(cl *Client, args []string) {
 	}
 }
 
+func cmdBackground(cl *Client, args []string) {
+	if len(args) == 0 {
+		cl.sendServerMessageOOC("The current background is " + cl.area.Background)
+	} else if cl.area.bglock == true {
+		if cl.is_mod == true {
+			cl.area.Background = args[0]
+			cl.area.sendRawMessage("BN#" + args[0] + "#%")
+			cl.sendServerMessageOOC("changed background to " + args[0])
+			writeClientLog(cl, "changed background to "+args[0])
+		} else {
+			cl.sendServerMessageOOC("A moderator has locked the background")
+		}
+	} else if stringInSlice(args[0], config.Backgroundlist) == true && cl.area.bglock == false {
+		cl.area.Background = args[0]
+		cl.area.sendRawMessage("BN#" + args[0] + "#%")
+		cl.sendServerMessageOOC("changed background to " + args[0])
+		writeClientLog(cl, "changed background to "+args[0])
+	} else {
+		cl.sendServerMessageOOC("That background cannot be found or is unavailable")
+	}
+}
+
+func cmdBgLock(cl *Client, args []string) {
+	if lock, err := strconv.ParseBool(args[0]); err == nil {
+		if cl.is_mod == true {
+			cl.area.bglock = lock
+			cl.sendServerMessageOOC("Background lock is now " + args[0])
+			writeClientLog(cl, "has set the background lock to "+args[0])
+		} else {
+			cl.sendServerMessageOOC("You do not have permission to use that")
+		}
+	}
+}
+
 func cmdLogin(cl *Client, args []string) {
 	if len(args) != 1 {
 		cl.sendServerMessageOOC("Invalid arguments.")

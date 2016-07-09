@@ -110,7 +110,7 @@ func (cl *Client) sendDone() {
 	charcheck += "#%"
 
 	cl.sendRawMessage(charcheck)
-	cl.sendRawMessage("BN#gs4#%")
+	cl.sendRawMessage("BN#" + cl.area.Background + "#%")
 	cl.sendRawMessage("MM#1#%")
 	cl.sendRawMessage("OPPASS#" +
 		encryptMessage(config.Guardpass, crypt_key) + "#%")

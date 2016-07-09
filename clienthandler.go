@@ -469,6 +469,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdMute(client, target)
 		case "unmute":
 			cmdUnmute(client, target)
+		case "bg":
+			cmdBackground(client, args)
+		case "bglock":
+			cmdBgLock(client, args)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
