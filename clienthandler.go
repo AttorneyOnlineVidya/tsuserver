@@ -397,6 +397,7 @@ func parseMessageIC(rawmsg string, client *Client) (string, error) {
 	ret := fmt.Sprintf("MS#%s#%s#%s#%s#%s#%s#%s#%s#%d#%s#%s#%s#%d#%s#%s#%%",
 		msgtype, preanim, foldername, anim, text, pos, sfx, animtype,
 		client.charid, sfxdelay, button, unk, client.charid, ding, color)
+	ClientToLog(client, "["+client.getCharacterName()+"@"+client.getAreaName()+"]"+text)
 
 	return ret, nil
 }
@@ -468,6 +469,7 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		}
 	} else {
 		ret = fmt.Sprintf("CT#%s#%s#%%", client.oocname, text)
+		ClientToLog(client, "[OOC]["+client.oocname+"]"+text)
 	}
 	return ret, nil
 }
