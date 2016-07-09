@@ -11,11 +11,11 @@ var clientlog_filename string = "logs/client.log"
 var serverlog_filename string = "logs/server.log"
 
 /*Logs client actions or messages
-ClientToLog (Client pointer, Text string)
-Example: ClientToLog(cl, "Changed area to "+cl.area.Name+".")
-Output: [127.0.0.1      ][2016-07-09 12:58:03]Changed area to Courtroom 1.
+writeClientLog (Client pointer, Text string)
+Example: writeClientLog(cl, "Changed area to "+cl.area.Name+".")
+Output: [127.0.0.1      ][2016-07-09 14:40:19 UTC][Feen][Phoenix@Courtroom 1] Changed area to Courtroom 1.
 */
-func ClientToLog(cl *Client, logstr string) {
+func writeClientLog(cl *Client, logstr string) {
 	if !FileExists(clientlog_filename) {
 		CreateFile(clientlog_filename)
 	}
@@ -26,17 +26,18 @@ func ClientToLog(cl *Client, logstr string) {
 	defer logfile.Close()
 
 	timestamp := time.Now().UTC().Format("2006-01-02 15:04:05 UTC")
-	fullstring := fmt.Sprintf("[%-15s][%s]%s\n", cl.IP.String(), timestamp, logstr)
+	oocchararea := fmt.Sprintf("[%s][%s@%s]", cl.oocname, cl.getCharacterName(), cl.getAreaName())
+	fullstring := fmt.Sprintf("[%-15s][%s]%s%s\n", cl.IP.String(), timestamp, oocchararea, logstr)
 
 	logfile.WriteString(fullstring)
 }
 
 /*Logs server actions or messages
-ServerToLog (Text string)
-Example: ServerToLog("Starting server.")
+writeServerLog (Text string)
+Example: writeServerLog("Starting server.")
 Output: [2016-07-09 12:51:26]Starting server.
 */
-func ServerToLog(logstr string) {
+func writeServerLog(logstr string) {
 	if !FileExists(serverlog_filename) {
 		CreateFile(serverlog_filename)
 	}

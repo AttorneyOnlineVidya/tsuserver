@@ -36,7 +36,7 @@ func cmdArea(cl *Client, args []string) {
 			cl.sendServerMessageOOC(err.Error())
 		} else {
 			cl.sendServerMessageOOC("Changed area to " + cl.area.Name + ".")
-			ClientToLog(cl, "Changed area to "+cl.area.Name+".")
+			writeClientLog(cl, "Changed area to "+cl.area.Name+".")
 		}
 	} else {
 		cl.sendServerMessageOOC("Too many arguments.")
@@ -52,8 +52,10 @@ func cmdLogin(cl *Client, args []string) {
 	if args[0] == config.Modpass {
 		cl.is_mod = true
 		cl.sendServerMessageOOC("Logged in as a moderator.")
+		writeClientLog(cl, "Logged in as a moderator.")
 	} else {
 		cl.sendServerMessageOOC("Invalid password.")
+		writeClientLog(cl, "Tried to use mod login")
 	}
 }
 
@@ -67,6 +69,7 @@ func cmdMute(cl *Client, target string) {
 	for _, v := range client_list.findAllTargets(cl, target) {
 		if !v.muted {
 			v.muted = true
+			writeClientLog(cl, " muted"+v.IP.String())
 			v.sendServerMessageOOC("You have been muted by a moderator.")
 			cnt++
 		}
@@ -89,6 +92,7 @@ func cmdUnmute(cl *Client, target string) {
 	for _, v := range client_list.findAllTargets(cl, target) {
 		if v.muted {
 			v.muted = false
+			writeClientLog(cl, " unmuted"+v.IP.String())
 			v.sendServerMessageOOC("You have been unmuted by a moderator.")
 			cnt++
 		}

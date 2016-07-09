@@ -115,6 +115,7 @@ func (cl *Client) sendDone() {
 	cl.sendRawMessage("OPPASS#" +
 		encryptMessage(config.Guardpass, crypt_key) + "#%")
 	cl.sendRawMessage("DONE#%")
+	writeClientLog(cl, "CLIENT CONNECTED")
 }
 
 func (cl *Client) changeCharacterID(id int) error {
@@ -132,10 +133,12 @@ func (cl *Client) changeCharacterID(id int) error {
 	// send new character to user
 	cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
 		"#CID#" + strconv.Itoa(cl.charid) + "#%")
+	writeClientLog(cl, "Changed character to: "+cl.getCharacterName())
 	return nil
 }
 
 func (cl *Client) disconnect() {
+	writeClientLog(cl, "CLIENT DISCONNECTED")
 	client_list.removeClient(cl)
 	cl.area.removeTakenCharacter(cl.charid)
 	cl.area.removeClient(cl)
