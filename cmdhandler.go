@@ -48,32 +48,40 @@ func cmdBackground(cl *Client, args []string) {
 		cl.sendServerMessageOOC("The current background is " + cl.area.Background)
 	} else if cl.area.bglock == true {
 		if cl.is_mod == true {
-			cl.area.Background = args[0]
-			cl.area.sendRawMessage("BN#" + args[0] + "#%")
-			cl.sendServerMessageOOC("changed background to " + args[0])
-			writeClientLog(cl, "changed background to "+args[0])
+			if err := cl.area.changeBackground(args[0]); err != nil {
+				cl.sendServerMessageOOC("Background not found.")
+			} else {
+				cl.area.sendServerMessageOOC(fmt.Sprintf("%s changed background to %s.",
+					cl.getCharacterName(), args[0]))
+				writeClientLog(cl, "moderator changed locked background to "+args[0])
+			}
 		} else {
 			cl.sendServerMessageOOC("A moderator has locked the background")
 		}
-	} else if stringInSlice(args[0], config.Backgroundlist) == true && cl.area.bglock == false {
-		cl.area.Background = args[0]
-		cl.area.sendRawMessage("BN#" + args[0] + "#%")
-		cl.sendServerMessageOOC("changed background to " + args[0])
-		writeClientLog(cl, "changed background to "+args[0])
 	} else {
-		cl.sendServerMessageOOC("That background cannot be found or is unavailable")
+		if err := cl.area.changeBackground(args[0]); err != nil {
+			cl.sendServerMessageOOC("Background not found.")
+		} else {
+			cl.area.sendServerMessageOOC(fmt.Sprintf("%s changed background to %s.",
+				cl.getCharacterName(), args[0]))
+			writeClientLog(cl, "changed background to "+args[0])
+		}
 	}
 }
 
 func cmdBgLock(cl *Client, args []string) {
-	if lock, err := strconv.ParseBool(args[0]); err == nil {
-		if cl.is_mod == true {
-			cl.area.bglock = lock
-			cl.sendServerMessageOOC("Background lock is now " + args[0])
-			writeClientLog(cl, "has set the background lock to "+args[0])
+	if cl.is_mod == true {
+		if cl.area.bglock {
+			cl.area.bglock = false
+			cl.area.sendServerMessageOOC("Background unlocked.")
+			writeClientLog(cl, "Unlocked the background.")
 		} else {
-			cl.sendServerMessageOOC("You do not have permission to use that")
+			cl.area.bglock = true
+			cl.area.sendServerMessageOOC("Background locked.")
+			writeClientLog(cl, "Locked the background.")
 		}
+	} else {
+		cl.sendServerMessageOOC("You do not have permission to use that")
 	}
 }
 

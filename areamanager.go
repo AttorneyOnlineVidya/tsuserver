@@ -49,6 +49,10 @@ func (a *Area) sendRawMessage(msg string) {
 	}
 }
 
+func (a *Area) sendServerMessageOOC(msg string) {
+	a.sendRawMessage("CT#" + config.Reservedname + "#" + msg + "#%")
+}
+
 func (a *Area) getCharCount() int {
 	a.lock.Lock()
 	defer a.lock.Unlock()
@@ -123,6 +127,26 @@ func (a *Area) playMusic(songname string, charid int, duration int) {
 		<-a.song_timer.C
 		a.playMusic(songname, charid, duration)
 	}()
+}
+
+func (a *Area) changeBackground(name string) error {
+	// check if said background exists
+	bg, err := stringInSlice(name, config.Backgroundlist, false)
+	if err != nil {
+		return errors.New("This background does not exist.")
+	}
+
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	// change background
+	a.Background = bg
+	a.sendRawMessage("BN#" + bg + "#%")
+
+	writeServerLog(fmt.Sprintf("Background in Area %d changed to %s.",
+		a.Areaid, a.Background))
+
+	return nil
 }
 
 func (a *Area) addTakenCharacter(id int, cl *Client) {

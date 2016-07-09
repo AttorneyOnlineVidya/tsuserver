@@ -20,9 +20,11 @@ package main
 
 import (
 	"encoding/hex"
+	"errors"
 	"math"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -110,13 +112,19 @@ func isValidCharID(id int) bool {
 	return id >= 0 && id < len(config.Charlist)
 }
 
-func stringInSlice(a string, list []string) bool {
+func stringInSlice(a string, list []string, case_sensitive bool) (string, error) {
 	for _, b := range list {
-		if b == a {
-			return true
+		if case_sensitive {
+			if b == a {
+				return b, nil
+			}
+		} else {
+			if strings.ToLower(b) == strings.ToLower(a) {
+				return b, nil
+			}
 		}
 	}
-	return false
+	return "", errors.New("String not found.")
 }
 
 func getCIDfromName(charname string) int {
