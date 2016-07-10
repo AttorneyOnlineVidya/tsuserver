@@ -112,6 +112,15 @@ func isValidCharID(id int) bool {
 	return id >= 0 && id < len(config.Charlist)
 }
 
+func isPosValid(pos string) bool {
+	validpos := map[string]bool{"def": true, "pro": true, "hld": true,
+		"hlp": true, "wit": true, "jud": true}
+	if _, ok := validpos[pos]; ok {
+		return true
+	}
+	return false
+}
+
 func stringInSlice(a string, list []string, case_sensitive bool) (string, error) {
 	for _, b := range list {
 		if case_sensitive {

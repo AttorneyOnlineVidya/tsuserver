@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -36,6 +37,7 @@ type Client struct {
 	is_mod   bool
 	muted    bool
 	lock     sync.Mutex
+	pos      string
 }
 
 type ClientList struct {
@@ -62,6 +64,7 @@ func (cl *Client) changeAreaID(areaid int) error {
 			if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
 				if id, err := v.randomFreeCharacterID(); err == nil {
 					cl.charid = id
+					cl.resetPos()
 					cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
 						"#CID#" + strconv.Itoa(id) + "#%")
 					cl.sendServerMessageOOC("Your character is taken, changing to a random one.")
@@ -121,6 +124,7 @@ func (cl *Client) sendDone() {
 func (cl *Client) charSelect() {
 	cl.area.removeTakenCharacter(cl.charid)
 	cl.charid = -1
+	cl.resetPos()
 
 	cl.sendDone()
 }
@@ -138,15 +142,43 @@ func (cl *Client) changeCharacterID(id int) error {
 	if cl.charid != id && !cl.area.isCharIDAvailable(id) {
 		return errors.New("That character is unavailable.")
 	}
+
 	// add character to area
 	cl.area.removeTakenCharacter(cl.charid)
 	cl.charid = id
 	cl.area.addTakenCharacter(id, cl)
+
 	// send new character to user
+	cl.resetPos()
 	cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
 		"#CID#" + strconv.Itoa(cl.charid) + "#%")
 	writeClientLog(cl, "Changed character to: "+cl.getCharacterName())
 	return nil
+}
+
+func (cl *Client) changePos(pos string) error {
+	cl.lock.Lock()
+	defer cl.lock.Unlock()
+
+	lpos := strings.ToLower(pos)
+
+	if isPosValid(lpos) {
+		cl.pos = lpos
+		return nil
+	}
+
+	return errors.New("Invalid position.")
+}
+
+func (cl *Client) getPosition() string {
+	cl.lock.Lock()
+	defer cl.lock.Unlock()
+
+	return cl.pos
+}
+
+func (cl *Client) resetPos() {
+	cl.pos = ""
 }
 
 func (cl *Client) disconnect() {

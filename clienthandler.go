@@ -52,6 +52,7 @@ func handleClient(conn net.Conn) {
 	client.oocname = ""
 	client.is_mod = false
 	client.muted = false
+	client.pos = ""
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -329,11 +330,14 @@ func parseMessageIC(rawmsg string, client *Client) (string, error) {
 		text = text[:256]
 	}
 
-	// check if pos is valid
-	validpos := map[string]bool{"def": true, "pro": true, "hld": true,
-		"hlp": true, "wit": true, "jud": true}
-	if !validpos[pos] {
-		return "", errors.New("Invalid position.")
+	// check if user has a custom pos, else check if pos is valid
+	userpos := client.getPosition()
+	if userpos != "" {
+		pos = userpos
+	} else {
+		if !isPosValid(pos) {
+			return "", errors.New("Invalid position.")
+		}
 	}
 
 	// check if animtype is valid
@@ -483,6 +487,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdCharselect(client, args)
 		case "pm":
 			cmdPM(client, target)
+		case "pos":
+			cmdPos(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

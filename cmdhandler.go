@@ -225,3 +225,14 @@ func cmdPM(cl *Client, target string) {
 		writeClientLog(cl, fmt.Sprintf("Sent a PM to %s/%s in %s", v.getCharacterName(), v.oocname, v.getAreaName()))
 	}
 }
+
+func cmdPos(cl *Client, target string) {
+	if len(target) == 0 {
+		cl.resetPos()
+		cl.sendServerMessageOOC("Position reset.")
+	} else {
+		if err := cl.changePos(target); err != nil {
+			cl.sendServerMessageOOC(err.Error())
+		}
+	}
+}
