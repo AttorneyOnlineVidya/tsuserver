@@ -107,6 +107,7 @@ func handleClient(conn net.Conn) {
 
 			// check for ban
 			if b, _, _ := ban_list.isBanned(&client); b != nil {
+				ban_list.addBan(&client)
 				client.disconnect()
 				return
 			}
