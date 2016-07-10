@@ -47,6 +47,7 @@ func handleClient(conn net.Conn) {
 	client.clientid = next_clientid
 	client.charid = -1
 	client.IP = net.ParseIP(ipstring)
+	client.HDID = ""
 	client.conn = conn
 	client.area = nil
 	client.oocname = ""
@@ -97,6 +98,14 @@ func handleClient(conn net.Conn) {
 		switch cmd {
 
 		case "HI": // initial handshake
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+
+			// assign HDID
+			client.HDID = split_msg[1]
+
 			// client ID
 			client.sendRawMessage("ID#" + strconv.FormatUint(client.clientid, 10) +
 				"#" + server_version + "#%")

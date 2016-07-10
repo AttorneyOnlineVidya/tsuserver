@@ -30,6 +30,7 @@ import (
 type Client struct {
 	clientid uint64
 	IP       net.IP
+	HDID     string
 	conn     net.Conn
 	charid   int
 	area     *Area
