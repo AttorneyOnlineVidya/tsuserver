@@ -140,17 +140,22 @@ func getCIDfromName(charname string) (int, error) {
 	return -1, errors.New("Character could not be found")
 }
 
-func firstWords(value string, count int) string {
-	// Loop over all indexes in the string.
-	for i := range value {
-		// If we encounter a space, reduce the count.
-		if value[i] == ' ' {
-			count -= 1
-			// When no more words required, return a substring.
-			if count == 0 {
-				return value[0:i]
-			}
+// finds whether a string starts with a character name
+// if yes, returns the character name and the rest of the message
+// if not, returns an error
+func msgStartsWithChar(str string) (string, string, error) {
+	if len(str) == 0 {
+		return "", "", errors.New("Empty string.")
+	}
+
+	for _, v := range config.Charlist {
+		if strings.HasPrefix(strings.ToLower(str), strings.ToLower(v)) {
+			wordcount := len(strings.Split(v, " "))
+			split_str := strings.Split(str, " ")
+
+			return v, strings.Join(split_str[wordcount:], " "), nil
 		}
 	}
-	return value
+
+	return "", "", errors.New("Character name not found.")
 }
