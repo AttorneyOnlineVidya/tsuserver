@@ -199,6 +199,11 @@ func cmdPM(cl *Client, target string) {
 
 	charname, msg, err := msgStartsWithChar(target)
 	if err == nil {
+		if len(msg) == 0 {
+			cl.sendServerMessageOOC("Message is empty.")
+			return
+		}
+
 		name = charname
 		message = msg
 		if tgt := client_list.findTargetByChar(cl, name); tgt != nil {
