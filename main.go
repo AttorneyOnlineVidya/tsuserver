@@ -33,6 +33,7 @@ func main() {
 	}
 	log.Print("Starting server.")
 	writeServerLog("Starting server.")
+	ban_list.loadBanlist()
 	calcKeys()
 
 	for {

@@ -27,6 +27,8 @@ import (
 	"sync"
 )
 
+var client_list *ClientList = new(ClientList)
+
 type Client struct {
 	clientid uint64
 	IP       net.IP

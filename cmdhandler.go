@@ -167,6 +167,38 @@ func cmdKick(cl *Client, target string) {
 	}
 }
 
+func cmdBan(cl *Client, targetip string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	ban_clients := client_list.findTargetsByIP(cl, targetip)
+
+	if len(ban_clients) == 0 {
+		cl.sendServerMessageOOC("No targets found.")
+	} else {
+		ban_list.addBan(ban_clients[0])
+		cl.sendServerMessageOOC(fmt.Sprintf("Banned IP %s.", targetip))
+		for _, v := range ban_clients {
+			v.disconnect()
+		}
+	}
+}
+
+func cmdReloadBans(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	if err := ban_list.loadBanlist(); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		cl.sendServerMessageOOC("Banlist reloaded.")
+	}
+}
+
 func cmdSwitch(cl *Client, name string) {
 	oldchar := cl.getCharacterName()
 	if charid, err := getCIDfromName(name); err != nil {

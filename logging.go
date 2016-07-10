@@ -69,23 +69,3 @@ func writeServerLog(logstr string) {
 
 	logfile.WriteString(fullstring)
 }
-
-//Checks if the log file exists
-func FileExists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
-}
-
-//Creates the log file
-func CreateFile(name string) error {
-	fo, err := os.Create(name)
-	if err != nil {
-		return err
-	}
-	defer fo.Close()
-	return nil
-}

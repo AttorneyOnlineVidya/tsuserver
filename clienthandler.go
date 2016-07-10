@@ -29,7 +29,6 @@ import (
 )
 
 var next_clientid uint64 = 1
-var client_list *ClientList = new(ClientList)
 
 func handleClient(conn net.Conn) {
 	var n int
@@ -105,6 +104,12 @@ func handleClient(conn net.Conn) {
 
 			// assign HDID
 			client.HDID = split_msg[1]
+
+			// check for ban
+			if b, _, _ := ban_list.isBanned(&client); b != nil {
+				client.disconnect()
+				return
+			}
 
 			// client ID
 			client.sendRawMessage("ID#" + strconv.FormatUint(client.clientid, 10) +
@@ -486,6 +491,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdUnmute(client, target)
 		case "kick":
 			cmdKick(client, target)
+		case "ban":
+			cmdBan(client, target)
+		case "reloadbans":
+			cmdReloadBans(client, target)
 		case "bg":
 			cmdBackground(client, args)
 		case "bglock":

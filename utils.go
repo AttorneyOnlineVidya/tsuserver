@@ -23,6 +23,7 @@ import (
 	"errors"
 	"math"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -167,4 +168,24 @@ func msgStartsWithChar(str string) (string, string, error) {
 	}
 
 	return "", "", errors.New("Character name not found.")
+}
+
+// checks if file exists
+func FileExists(name string) bool {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
+
+// creates given file
+func CreateFile(name string) error {
+	fo, err := os.Create(name)
+	if err != nil {
+		return err
+	}
+	defer fo.Close()
+	return nil
 }
