@@ -191,8 +191,8 @@ func cmdPM(cl *Client, target string) {
 	var name string
 	var message string
 
-	split_msg := strings.Split(target, " ")
-	if len(split_msg) < 2 {
+	split_msg := strings.SplitN(target, " ", 2)
+	if len(split_msg) != 2 {
 		cl.sendServerMessageOOC("Invalid PM format.")
 		return
 	}
@@ -210,7 +210,7 @@ func cmdPM(cl *Client, target string) {
 			targets = append(targets, tgt)
 		}
 	} else {
-		message = strings.Join(split_msg[1:], " ")
+		message = split_msg[1]
 		name = split_msg[0]
 		targets = client_list.findAllTargets(cl, name)
 	}
