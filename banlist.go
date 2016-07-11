@@ -28,8 +28,9 @@ var banlist_file string = "storage/banlist.json"
 var ban_list *BanList = new(BanList)
 
 type Ban struct {
-	Iplist []string
-	Hdlist []string
+	Iplist []string `json:"IP"`
+	Hdlist []string `json:"HD"`
+	Reason string   `json:"Reason,omitempty"`
 }
 
 type BanList struct {
@@ -72,7 +73,7 @@ func (bl *BanList) isBanned(cl *Client) (*Ban, bool, bool) {
 }
 
 // adds ban to the list
-func (bl *BanList) addBan(cl *Client) {
+func (bl *BanList) addBan(cl *Client, reason string) {
 	var ban *Ban
 
 	// check if such a ban already exists
@@ -80,6 +81,9 @@ func (bl *BanList) addBan(cl *Client) {
 		ban = b
 
 		bl.lock.Lock()
+		if len(reason) > 0 {
+			ban.Reason = reason
+		}
 		if !ipb {
 			ban.Iplist = append(ban.Iplist, cl.IP.String())
 		}
@@ -92,6 +96,7 @@ func (bl *BanList) addBan(cl *Client) {
 		ban = &Ban{}
 		ban.Iplist = append(ban.Iplist, cl.IP.String())
 		ban.Hdlist = append(ban.Hdlist, cl.HDID)
+		ban.Reason = reason
 
 		// add to banlist
 		bl.lock.Lock()
@@ -105,7 +110,7 @@ func (bl *BanList) addBan(cl *Client) {
 
 func (bl *BanList) writeBanlist() {
 	bl.lock.Lock()
-	bl_json, _ := json.Marshal(bl.Banlist)
+	bl_json, _ := json.MarshalIndent(bl.Banlist, "", "  ")
 	bl.lock.Unlock()
 
 	ioutil.WriteFile(banlist_file, bl_json, 0666)

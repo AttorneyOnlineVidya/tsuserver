@@ -51,7 +51,7 @@ func handleClient(conn net.Conn) {
 	client.area = nil
 	client.oocname = ""
 	client.is_mod = false
-	client.muted = false
+	client.muted = true
 	client.pos = ""
 
 	next_clientid += 1
@@ -107,10 +107,12 @@ func handleClient(conn net.Conn) {
 
 			// check for ban
 			if b, _, _ := ban_list.isBanned(&client); b != nil {
-				ban_list.addBan(&client)
+				ban_list.addBan(&client, "")
 				client.disconnect()
 				return
 			}
+
+			client.muted = false
 
 			// client ID
 			client.sendRawMessage("ID#" + strconv.FormatUint(client.clientid, 10) +
@@ -493,7 +495,7 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		case "kick":
 			cmdKick(client, target)
 		case "ban":
-			cmdBan(client, target)
+			cmdBan(client, args)
 		case "reloadbans":
 			cmdReloadBans(client, target)
 		case "bg":

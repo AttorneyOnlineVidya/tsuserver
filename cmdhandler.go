@@ -167,10 +167,24 @@ func cmdKick(cl *Client, target string) {
 	}
 }
 
-func cmdBan(cl *Client, targetip string) {
+func cmdBan(cl *Client, args []string) {
 	if !cl.is_mod {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
+	}
+
+	targetip := ""
+	reason := "N/A"
+
+	if len(args) >= 1 {
+		targetip = args[0]
+	} else {
+		cl.sendServerMessageOOC("Argument must be an IP.")
+		return
+	}
+
+	if len(args) > 1 {
+		reason = strings.Join(args[1:], " ")
 	}
 
 	ban_clients := client_list.findTargetsByIP(cl, targetip)
@@ -178,8 +192,10 @@ func cmdBan(cl *Client, targetip string) {
 	if len(ban_clients) == 0 {
 		cl.sendServerMessageOOC("No targets found.")
 	} else {
-		ban_list.addBan(ban_clients[0])
+		ban_list.addBan(ban_clients[0], reason)
 		cl.sendServerMessageOOC(fmt.Sprintf("Banned IP %s.", targetip))
+		writeClientLog(cl, fmt.Sprintf("Banned IP %s. Reason: %s.",
+			targetip, reason))
 		for _, v := range ban_clients {
 			v.disconnect()
 		}
