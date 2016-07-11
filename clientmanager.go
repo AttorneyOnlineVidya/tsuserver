@@ -87,6 +87,9 @@ func (cl *Client) changeAreaID(areaid int) error {
 			// send current penalties
 			cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
 			cl.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", cl.area.hp_pro))
+			// send background
+			cl.sendRawMessage("BN#" + v.Background + "#%")
+
 			return nil
 		}
 	}
