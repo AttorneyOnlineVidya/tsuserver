@@ -45,6 +45,10 @@ type Config struct {
 	Reservedname   string
 	Modpass        string
 	Guardpass      string
+	Advertise      bool
+	Masterserver   string
+	Servername     string
+	Description    string
 }
 
 var config Config
@@ -64,10 +68,6 @@ func loadConfig() {
 	}
 
 	if _, err := toml.DecodeFile("./config/backgrounds.toml", &config); err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := toml.DecodeFile("./config/secret.toml", &config); err != nil {
 		log.Fatal(err)
 	}
 

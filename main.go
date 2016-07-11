@@ -36,6 +36,10 @@ func main() {
 	ban_list.loadBanlist()
 	calcKeys()
 
+	if config.Advertise {
+		go msAdvertiser()
+	}
+
 	for {
 		conn, err := ln.Accept()
 		if err != nil {

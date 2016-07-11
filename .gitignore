@@ -1,4 +1,4 @@
 *.exe
 *.log
 banlist.json
-secret.toml
+config.toml
