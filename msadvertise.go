@@ -30,6 +30,16 @@ func msAdvertiser() {
 	var is_connected bool = false
 	var reader *bufio.Reader
 
+	// start pinging the masterserver
+	ticker := time.NewTicker(15 * time.Second)
+	go func() {
+		for range ticker.C {
+			if is_connected {
+				conn.Write([]byte("PING#%"))
+			}
+		}
+	}()
+
 	for {
 		// check if MS is connected
 		if !is_connected {
@@ -55,8 +65,6 @@ func msAdvertiser() {
 		}
 
 		switch str {
-		case "CHECK#%":
-			conn.Write([]byte("PING#%"))
 		case "NOSERV#%":
 			msSendInfo(conn)
 		}
