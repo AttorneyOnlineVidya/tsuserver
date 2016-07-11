@@ -111,6 +111,9 @@ func (a *Area) setProHP(hp int) error {
 }
 
 func (a *Area) playMusic(songname string, charid int, duration int) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
 	a.sendRawMessage(fmt.Sprintf("MC#%s#%d#%%", songname, charid))
 
 	if a.song_timer != nil {
