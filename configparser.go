@@ -78,7 +78,7 @@ func loadConfig() {
 	}
 
 	for _, v := range tmpconf.Musiclist {
-		spl := strings.Split(v, "#")
+		spl := strings.Split(v, "*")
 		name := spl[0]
 		dur := -1
 		if len(spl) == 2 {
