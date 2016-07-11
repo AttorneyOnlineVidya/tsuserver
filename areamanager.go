@@ -124,12 +124,9 @@ func (a *Area) playMusic(songname string, charid int, duration int) {
 		return
 	}
 
-	a.song_timer = time.NewTimer(time.Second * time.Duration(duration))
-
-	go func() {
-		<-a.song_timer.C
+	a.song_timer = time.AfterFunc(time.Second*time.Duration(duration), func() {
 		a.playMusic(songname, charid, duration)
-	}()
+	})
 }
 
 func (a *Area) changeBackground(name string) error {
