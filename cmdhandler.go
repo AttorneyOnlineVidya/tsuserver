@@ -302,7 +302,11 @@ func cmdGlobalMessage(cl *Client, message string) {
 	if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty.")
 	} else {
-		client_list.sendGlobalMessage(cl, message)
+		client_list.sendAllRawIf(fmt.Sprintf(
+			"CT#$GLOBAL[%v][%s]#%s#%", cl.area.Areaid, cl.getCharacterName(), message),
+			func(c *Client) bool {
+				return c.global
+			})
 		writeClientLog(cl, "[GLOBAL]"+message)
 	}
 }
@@ -321,7 +325,11 @@ func cmdNeed(cl *Client, message string) {
 	if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty.")
 	} else {
-		client_list.sendAdvert(cl, message)
+		client_list.sendAllRawIf(fmt.Sprintf(
+			"CT#$HOST#\r\n=======ADVERT=======\r\n"+cl.getCharacterName()+" in "+cl.getAreaName()+" needs "+message+"\r\n"+"===================#%"),
+			func(c *Client) bool {
+				return c.advert
+			})
 	}
 }
 
