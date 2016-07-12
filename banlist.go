@@ -118,7 +118,7 @@ func (bl *BanList) writeBanlist() {
 
 func (bl *BanList) loadBanlist() error {
 	bl.lock.Lock()
-	bl.lock.Unlock()
+	defer bl.lock.Unlock()
 
 	if bytes, err := ioutil.ReadFile(banlist_file); err == nil {
 		if err2 := json.Unmarshal(bytes, &bl.Banlist); err2 != nil {

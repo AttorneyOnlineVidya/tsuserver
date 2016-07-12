@@ -188,9 +188,6 @@ func (cl *Client) getPosition() string {
 }
 
 func (cl *Client) resetPos() {
-	cl.lock.Lock()
-	defer cl.lock.Unlock()
-
 	cl.pos = ""
 }
 
