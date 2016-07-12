@@ -226,6 +226,13 @@ func handleClient(conn net.Conn) {
 			} else if out_msg != "" {
 				client.area.sendRawMessage(out_msg)
 			}
+
+		case "ZZ": // mod call
+			client_list.sendAllRawIf(fmt.Sprintf(
+				"ZZ#%s (%s) in %s#%%", client.getCharacterName(), client.IP.String(), client.getAreaName()),
+				func(c *Client) bool {
+					return c.is_mod
+				})
 		}
 	}
 }
@@ -260,6 +267,11 @@ func parseMusic(rawmsg string, client *Client) error {
 	charid, err := strconv.Atoi(split_msg[2])
 	if err != nil {
 		return err
+	}
+
+	// check for empty songname
+	if len(songname) == 0 {
+		return errors.New("Empty song name.")
 	}
 
 	// check if char id matches client
@@ -525,6 +537,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdSwitch(client, target)
 		case "charselect":
 			cmdCharselect(client, args)
+		case "randomchar":
+			cmdRandomChar(client, target)
 		case "pm":
 			cmdPM(client, target)
 		case "pos":

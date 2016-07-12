@@ -350,3 +350,15 @@ func (clist *ClientList) sendAdvert(cl *Client, message string) {
 		}
 	}
 }
+
+// sends everyone a raw message based on a predicate
+func (clist *ClientList) sendAllRawIf(msg string, pred func(*Client) bool) {
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	for i := range clist.clients {
+		if pred(clist.clients[i]) {
+			clist.clients[i].sendRawMessage(msg)
+		}
+	}
+}
