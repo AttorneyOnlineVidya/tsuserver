@@ -284,3 +284,40 @@ func cmdPos(cl *Client, target string) {
 		}
 	}
 }
+
+func cmdGlobalMessage(cl *Client, message string) {
+	if len(message) == 0 {
+		cl.sendServerMessageOOC("Message is empty.")
+	} else {
+		client_list.sendGlobalMessage(cl, message)
+		writeClientLog(cl, "[GLOBAL]"+message)
+	}
+}
+
+func cmdGlobalToggle(cl *Client) {
+	if cl.global {
+		cl.global = false
+		cl.sendServerMessageOOC("Global toggled off.")
+	} else {
+		cl.global = true
+		cl.sendServerMessageOOC("Global toggled on.")
+	}
+}
+
+func cmdNeed(cl *Client, message string) {
+	if len(message) == 0 {
+		cl.sendServerMessageOOC("Message is empty.")
+	} else {
+		client_list.sendAdvert(cl, message)
+	}
+}
+
+func cmdAdvertToggle(cl *Client) {
+	if cl.advert {
+		cl.advert = false
+		cl.sendServerMessageOOC("Adverts toggled off.")
+	} else {
+		cl.advert = true
+		cl.sendServerMessageOOC("Adverts toggled on.")
+	}
+}

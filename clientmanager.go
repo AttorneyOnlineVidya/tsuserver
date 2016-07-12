@@ -39,6 +39,8 @@ type Client struct {
 	oocname  string
 	is_mod   bool
 	muted    bool
+	global   bool
+	advert   bool
 	lock     sync.Mutex
 	pos      string
 }
@@ -325,4 +327,26 @@ func (clist *ClientList) findAllTargets(cl *Client, target string) []*Client {
 	}
 
 	return []*Client{}
+}
+
+func (clist *ClientList) sendGlobalMessage(cl *Client, message string) {
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	for _, v := range clist.clients {
+		if v.global {
+			v.sendRawMessage(fmt.Sprintf("CT#%s[%v][%s]#%s#%", config.Reservedname, cl.area.Areaid, cl.getCharacterName(), message))
+		}
+	}
+}
+
+func (clist *ClientList) sendAdvert(cl *Client, message string) {
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	for _, v := range clist.clients {
+		if v.advert {
+			v.sendServerMessageOOC("\r\n=======ADVERT=======\r\n" + cl.getCharacterName() + " in " + cl.getAreaName() + " needs " + message + "\r\n" + "===================")
+		}
+	}
 }

@@ -53,6 +53,8 @@ func handleClient(conn net.Conn) {
 	client.is_mod = false
 	client.muted = true
 	client.pos = ""
+	client.global = true
+	client.advert = true
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -270,6 +272,7 @@ func parseMusic(rawmsg string, client *Client) error {
 			if strings.ToLower(songname[1:len(songname)]) == strings.ToLower(a.Name) {
 				if err := client.changeAreaID(a.Areaid); err != nil {
 					client.sendServerMessageOOC(err.Error())
+					return err
 				} else {
 					client.sendServerMessageOOC("Changed area to " + client.area.Name + ".")
 					writeClientLog(client, "Changed area to "+client.area.Name+".")
@@ -526,6 +529,14 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdPM(client, target)
 		case "pos":
 			cmdPos(client, target)
+		case "g":
+			cmdGlobalMessage(client, target)
+		case "global":
+			cmdGlobalToggle(client)
+		case "need":
+			cmdNeed(client, target)
+		case "adverts":
+			cmdAdvertToggle(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
