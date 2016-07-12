@@ -31,6 +31,7 @@ type Area struct {
 	Background    string
 	bglock        bool
 	status        string
+	docurl        string
 	clients       []*Client
 	lock          sync.RWMutex
 	hp_def        int

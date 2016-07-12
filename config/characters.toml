@@ -1,4 +1,4 @@
-# cannot contain more than 100 characters
+# cannot contain more than 100 characters, must be exactly the same as the folder name
 
 Charlist = [
 # page 1, first half

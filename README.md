@@ -21,6 +21,9 @@ Compile and run.
 
 * /charselect - Brings up the character select screen (Shrinks client)
 
+* /doc - Gives you the doc in use in the current area, heavily logged to discourage/detect bombings
+	*/setdoc (url) - Sets the doc in the current area.
+
 * /g (message) - Sends a global message to everyone in the server
 	* /global - Toggles Global off/on
 	

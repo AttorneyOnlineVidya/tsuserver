@@ -565,6 +565,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdLocalMod(client, target)
 		case "gm":
 			cmdGlobalMod(client, target)
+		case "setdoc":
+			cmdSetDoc(client, target)
+		case "doc":
+			cmdGetDoc(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

@@ -1,4 +1,7 @@
-Musiclist = [
+#Songname.mp3*timeinsecondstoloop
+#Anything on the list with > at the start
+#Will redirect user to that area name
+Musiclist = [ 
 	"==AREAS===",
 	">Basement",
 	">Courtroom 1",

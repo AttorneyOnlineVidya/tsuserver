@@ -1,11 +1,36 @@
-Defaultarea = 0
+Defaultarea = 0 ##The area people are put into when they connect
 
 [[Arealist]]
-Areaid = 0
-Name = "Basement"
-Background = "gs4"
+Areaid = 0			##The number of the area
+Name = "Basement"	##The name of the area
+Background = "gs4"	##The background the area will use by default
 
 [[Arealist]]
 Areaid = 1
 Name = "Courtroom 1"
+Background = "gs5"
+
+[[Arealist]]
+Areaid = 2
+Name = "Courtroom 2"
+Background = "Themis"
+
+[[Arealist]]
+Areaid = 3
+Name = "Courtroom 3"
+Background = "Ruinedcourt"
+
+[[Arealist]]
+Areaid = 4
+Name = "Courtroom 4"
+Background = "dungeon"
+
+[[Arealist]]
+Areaid = 5
+Name = "Arcade"
 Background = "gs4"
+
+[[Arealist]]
+Areaid = 6
+Name = "Lounge"
+Background = "cofe"
