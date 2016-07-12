@@ -40,14 +40,9 @@ type Area struct {
 }
 
 func (a *Area) sendRawMessage(msg string) {
-	client_list.lock.Lock()
-	defer client_list.lock.Unlock()
-
-	for _, v := range client_list.clients {
-		if v.area == a {
-			v.sendRawMessage(msg)
-		}
-	}
+	client_list.sendAllRawIf(msg, func(c *Client) bool {
+		return c.area == a
+	})
 }
 
 func (a *Area) sendServerMessageOOC(msg string) {
