@@ -214,7 +214,7 @@ func (a *Area) setAreaStatus(cl *Client, status string) {
 	writeClientLog(cl, "changed the area status to "+status)
 }
 
-func (a *Area) getAreaStatus(cl *Client) string {
+func (a *Area) getAreaStatus() string {
 	a.lock.RLock()
 	defer a.lock.RUnlock()
 
