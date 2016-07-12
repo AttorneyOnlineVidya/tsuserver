@@ -362,5 +362,29 @@ func cmdMOTD(cl *Client, message string) {
 		config.MOTD = message
 		writeClientLog(cl, "changed the MOTD.")
 	}
+}
 
+func cmdRoll(cl *Client, max string) {
+	if len(max) == 0 {
+		roll := randomInt(1, 6)
+		cl.area.sendServerMessageOOC(cl.getCharacterName() + " rolled " + strconv.Itoa(roll) + " out of 6")
+		writeClientLog(cl, "used roll")
+	} else {
+		maxroll, err := strconv.Atoi(max)
+		if err != nil {
+			cl.sendServerMessageOOC("The roll must be a number.")
+			return
+		}
+		if maxroll > 1 && maxroll <= 9999 {
+			roll := randomInt(1, maxroll)
+			cl.area.sendServerMessageOOC(cl.getCharacterName() + " rolled " + strconv.Itoa(roll) + " out of " + max)
+			writeClientLog(cl, "used roll")
+		} else {
+			cl.sendServerMessageOOC("The roll must be between 2 and 999.")
+		}
+	}
+}
+
+func cmdHelp(cl *Client) {
+	cl.sendServerMessageOOC("A list of commands can be found here: https://github.com/AttorneyOnlineVidya/tsuserver/blob/master/README.md")
 }

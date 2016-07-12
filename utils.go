@@ -201,3 +201,9 @@ func CreateFile(name string) error {
 	defer fo.Close()
 	return nil
 }
+
+// Generates a number between min and max
+func randomInt(min int, max int) int {
+	result := min + rand.Intn(max)
+	return result
+}
