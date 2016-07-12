@@ -354,3 +354,7 @@ func cmdModAnnounce(cl *Client, message string) {
 		writeClientLog(cl, "used Mod Announcement: "+message)
 	}
 }
+
+func cmdMOTD(cl *Client) {
+	cl.sendServerMessageOOC("\r\n========MOTD========\r\n" + config.MOTD + "\r\n===================")
+}

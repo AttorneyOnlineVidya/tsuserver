@@ -554,6 +554,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdAdvertToggle(client)
 		case "announce":
 			cmdModAnnounce(client, target)
+		case "motd":
+			cmdMOTD(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

@@ -49,6 +49,7 @@ type Config struct {
 	Masterserver   string
 	Servername     string
 	Description    string
+	MOTD           string
 }
 
 var config Config
