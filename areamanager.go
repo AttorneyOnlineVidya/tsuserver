@@ -32,7 +32,7 @@ type Area struct {
 	bglock        bool
 	status        string
 	clients       []*Client
-	lock          sync.Mutex
+	lock          sync.RWMutex
 	hp_def        int
 	hp_pro        int
 	song_timer    *time.Timer
@@ -50,8 +50,8 @@ func (a *Area) sendServerMessageOOC(msg string) {
 }
 
 func (a *Area) getCharCount() int {
-	a.lock.Lock()
-	defer a.lock.Unlock()
+	a.lock.RLock()
+	defer a.lock.RUnlock()
 
 	count := 0
 	for _, c := range a.clients {
@@ -161,16 +161,16 @@ func (a *Area) removeTakenCharacter(id int) {
 }
 
 func (a *Area) isCharIDAvailable(charid int) bool {
-	a.lock.Lock()
-	defer a.lock.Unlock()
+	a.lock.RLock()
+	defer a.lock.RUnlock()
 
 	_, ok := a.taken_charids[charid]
 	return !ok
 }
 
 func (a *Area) randomFreeCharacterID() (int, error) {
-	a.lock.Lock()
-	defer a.lock.Unlock()
+	a.lock.RLock()
+	defer a.lock.RUnlock()
 
 	var avail_ids []int
 
@@ -191,8 +191,8 @@ func (a *Area) randomFreeCharacterID() (int, error) {
 func (a *Area) getClientByCharName(charname string) *Client {
 	for i := range config.Charlist {
 		if config.Charlist[i] == charname {
-			a.lock.Lock()
-			defer a.lock.Unlock()
+			a.lock.RLock()
+			defer a.lock.RUnlock()
 
 			if cl, ok := a.taken_charids[i]; ok {
 				return cl
@@ -206,6 +206,9 @@ func (a *Area) getClientByCharName(charname string) *Client {
 }
 
 func (a *Area) setAreaStatus(cl *Client, status string) {
+	a.lock.Lock()
+	a.lock.Unlock()
+
 	a.status = status
 	a.sendServerMessageOOC(cl.getCharacterName() + " changed the area status to " + status)
 	writeClientLog(cl, "changed the area status to "+status)
