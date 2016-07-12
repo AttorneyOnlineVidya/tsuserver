@@ -35,14 +35,14 @@ type Ban struct {
 
 type BanList struct {
 	Banlist []Ban
-	lock    sync.Mutex
+	lock    sync.RWMutex
 }
 
 // returns a pointer to the specific ban if client is banned
 // also returns whether the user is IP banned or HDID banned or both
 func (bl *BanList) isBanned(cl *Client) (*Ban, bool, bool) {
-	bl.lock.Lock()
-	defer bl.lock.Unlock()
+	bl.lock.RLock()
+	defer bl.lock.RUnlock()
 
 	ipbanned := false
 	hdbanned := false
@@ -109,14 +109,17 @@ func (bl *BanList) addBan(cl *Client, reason string) {
 }
 
 func (bl *BanList) writeBanlist() {
-	bl.lock.Lock()
+	bl.lock.RLock()
 	bl_json, _ := json.MarshalIndent(bl.Banlist, "", "  ")
-	bl.lock.Unlock()
+	bl.lock.RUnlock()
 
 	ioutil.WriteFile(banlist_file, bl_json, 0666)
 }
 
 func (bl *BanList) loadBanlist() error {
+	bl.lock.Lock()
+	bl.lock.Unlock()
+
 	if bytes, err := ioutil.ReadFile(banlist_file); err == nil {
 		if err2 := json.Unmarshal(bytes, &bl.Banlist); err2 != nil {
 			return err2

@@ -41,12 +41,12 @@ type Client struct {
 	muted    bool
 	global   bool
 	advert   bool
-	lock     sync.Mutex
+	lock     sync.RWMutex
 	pos      string
 }
 
 type ClientList struct {
-	lock    sync.Mutex
+	lock    sync.RWMutex
 	clients []*Client
 }
 
@@ -181,13 +181,16 @@ func (cl *Client) changePos(pos string) error {
 }
 
 func (cl *Client) getPosition() string {
-	cl.lock.Lock()
-	defer cl.lock.Unlock()
+	cl.lock.RLock()
+	defer cl.lock.RUnlock()
 
 	return cl.pos
 }
 
 func (cl *Client) resetPos() {
+	cl.lock.Lock()
+	defer cl.lock.Unlock()
+
 	cl.pos = ""
 }
 
@@ -236,8 +239,8 @@ func (cl Client) getPrintableAreaList() string {
 // ================
 
 func (clist *ClientList) onlineCharacters() int {
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	clist.lock.RLock()
+	defer clist.lock.RUnlock()
 
 	count := 0
 	for _, v := range clist.clients {
@@ -280,8 +283,8 @@ func (clist *ClientList) findTargetsByIP(cl *Client, targetip string) []*Client 
 		return ret
 	}
 
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	clist.lock.RLock()
+	defer clist.lock.RUnlock()
 
 	ip := net.ParseIP(targetip)
 
@@ -298,8 +301,8 @@ func (clist *ClientList) findTargetsByIP(cl *Client, targetip string) []*Client 
 func (clist *ClientList) findTargetsByOOC(cl *Client, target string) []*Client {
 	var ret []*Client
 
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	clist.lock.RLock()
+	defer clist.lock.RUnlock()
 
 	for _, v := range clist.clients {
 		if v.oocname == target {
@@ -333,8 +336,8 @@ func (clist *ClientList) findAllTargets(cl *Client, target string) []*Client {
 
 // sends everyone a raw message based on a predicate
 func (clist *ClientList) sendAllRawIf(msg string, pred func(*Client) bool) {
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	clist.lock.RLock()
+	defer clist.lock.RUnlock()
 
 	for i := range clist.clients {
 		if pred(clist.clients[i]) {
@@ -344,8 +347,8 @@ func (clist *ClientList) sendAllRawIf(msg string, pred func(*Client) bool) {
 }
 
 func (clist *ClientList) sendAllAnnouncement(message string) {
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	clist.lock.RLock()
+	defer clist.lock.RUnlock()
 
 	for i := range clist.clients {
 		clist.clients[i].sendServerMessageOOC("\r\n====ANNOUNCEMENT====\r\n------------------------------------\r\n" + message + "\r\n------------------------------------\r\n===================#%")
@@ -353,8 +356,8 @@ func (clist *ClientList) sendAllAnnouncement(message string) {
 }
 
 func (clist *ClientList) sendGlobalModMessage(message string) {
-	clist.lock.Lock()
-	defer clist.lock.Unlock()
+	clist.lock.RLock()
+	defer clist.lock.RUnlock()
 
 	for i := range clist.clients {
 		clist.clients[i].sendRawMessage(message)
