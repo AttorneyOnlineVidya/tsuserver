@@ -234,6 +234,19 @@ func cmdCharselect(cl *Client, args []string) {
 	cl.charSelect()
 }
 
+func cmdRandomChar(cl *Client, target string) {
+	if cid, err := cl.area.randomFreeCharacterID(); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		if err := cl.changeCharacterID(cid); err != nil {
+			cl.sendServerMessageOOC(err.Error())
+		} else {
+			cl.sendServerMessageOOC(fmt.Sprintf("Randomly chose %s.",
+				cl.getCharacterName()))
+		}
+	}
+}
+
 func cmdPM(cl *Client, target string) {
 	var targets []*Client
 	var name string
