@@ -526,17 +526,17 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		case "ban":
 			cmdBan(client, args)
 		case "reloadbans":
-			cmdReloadBans(client, target)
+			cmdReloadBans(client)
 		case "bg":
 			cmdBackground(client, args)
 		case "bglock":
-			cmdBgLock(client, args)
+			cmdBgLock(client)
 		case "switch":
 			cmdSwitch(client, target)
 		case "charselect":
-			cmdCharselect(client, args)
+			cmdCharselect(client)
 		case "randomchar":
-			cmdRandomChar(client, target)
+			cmdRandomChar(client)
 		case "pm":
 			cmdPM(client, target)
 		case "pos":
