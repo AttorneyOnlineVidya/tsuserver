@@ -53,8 +53,6 @@ func handleClient(conn net.Conn) {
 	client.is_mod = false
 	client.muted = true
 	client.pos = ""
-	client.global = true
-	client.advert = true
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -233,7 +231,6 @@ func handleClient(conn net.Conn) {
 				func(c *Client) bool {
 					return c.is_mod
 				})
-			writeClientLog(&client, "called a mod")
 		}
 	}
 }
@@ -493,7 +490,7 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 
 	// check if client has no name assigned yet
 	// or if they're using a reserved name
-	if oocname == config.Reservedname {
+	if isOOCNameReserved(oocname) {
 		return "", errors.New("User tried to use a reserved OOC name.")
 	} else if client.oocname == "" {
 		client.oocname = oocname
@@ -529,33 +526,21 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		case "ban":
 			cmdBan(client, args)
 		case "reloadbans":
-			cmdReloadBans(client)
+			cmdReloadBans(client, target)
 		case "bg":
 			cmdBackground(client, args)
 		case "bglock":
-			cmdBgLock(client)
+			cmdBgLock(client, args)
 		case "switch":
 			cmdSwitch(client, target)
 		case "charselect":
-			cmdCharselect(client)
+			cmdCharselect(client, args)
 		case "randomchar":
-			cmdRandomChar(client)
+			cmdRandomChar(client, target)
 		case "pm":
 			cmdPM(client, target)
 		case "pos":
 			cmdPos(client, target)
-		case "g":
-			cmdGlobalMessage(client, target)
-		case "global":
-			cmdGlobalToggle(client)
-		case "need":
-			cmdNeed(client, target)
-		case "adverts":
-			cmdAdvertToggle(client)
-		case "announce":
-			cmdModAnnounce(client, target)
-		case "motd":
-			cmdMOTD(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

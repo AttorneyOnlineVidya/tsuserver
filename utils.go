@@ -170,6 +170,18 @@ func msgStartsWithChar(str string) (string, string, error) {
 	return "", "", errors.New("Character name not found.")
 }
 
+func isOOCNameReserved(string name) bool {
+	if name == config.Reservedname {
+		return true
+	}
+
+	if strings.HasPrefix(name, "<dollar>GLOBAL") {
+		return true
+	}
+
+	return false
+}
+
 // checks if file exists
 func FileExists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
