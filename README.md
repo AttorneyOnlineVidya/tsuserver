@@ -56,8 +56,12 @@ Compile and run.
 
 * /bglock - Toggles the background lock in the area, preventing users from using /bg
 
+* /gm (message) - Same as global but gives you a [M]od tag. (global mod)
+
 * /kick (target) - Disconnects the target from the server, can be IP, Character name or OOC name.
 	* Character name only kicks the target in your current area.
+	
+* /lm (message) - Sends a mod message only in the area you are in. (local mod)
 	
 * /login (password) - Logs client in as moderator.
 

@@ -179,6 +179,10 @@ func isOOCNameReserved(name string) bool {
 		return true
 	}
 
+	if strings.HasPrefix(name, "<dollar>MOD") {
+		return true
+	}
+
 	return false
 }
 

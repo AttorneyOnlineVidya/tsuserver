@@ -53,6 +53,8 @@ func handleClient(conn net.Conn) {
 	client.is_mod = false
 	client.muted = true
 	client.pos = ""
+	client.advert = true
+	client.global = true
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -559,6 +561,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdHelp(client)
 		case "status":
 			cmdStatus(client, target)
+		case "lm":
+			cmdLocalMod(client, target)
+		case "gm":
+			cmdGlobalMod(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

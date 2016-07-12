@@ -145,6 +145,7 @@ func cmdUnmute(cl *Client, target string) {
 		cl.sendServerMessageOOC("No muted targets found.")
 	} else {
 		cl.sendServerMessageOOC(fmt.Sprintf("Unmuted %d client(s).", cnt))
+		writeClientLog(cl, fmt.Sprintf("Unmuted %d client(s).", cnt))
 	}
 }
 
@@ -157,6 +158,7 @@ func cmdKick(cl *Client, target string) {
 	cnt := 0
 	for _, v := range client_list.findAllTargets(cl, target) {
 		v.disconnect()
+		writeClientLog(cl, "kicked "+v.getCharacterName()+"@"+v.getAreaName())
 		cnt++
 	}
 
@@ -164,6 +166,7 @@ func cmdKick(cl *Client, target string) {
 		cl.sendServerMessageOOC("No targets found.")
 	} else {
 		cl.sendServerMessageOOC(fmt.Sprintf("Kicked %d client(s).", cnt))
+		writeClientLog(cl, fmt.Sprintf("kicked %d client(s)", cnt))
 	}
 }
 
@@ -409,5 +412,28 @@ func cmdStatus(cl *Client, target string) {
 		default:
 			cl.sendServerMessageOOC("Couldn't recognize status. Try: idle, buildingopen, buildingfull, casingopen, casingfull, recess")
 		}
+	}
+}
+
+func cmdLocalMod(cl *Client, message string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You do not have permission to use that")
+	} else if len(message) == 0 {
+		cl.sendServerMessageOOC("Message is empty")
+	} else {
+		cl.area.sendRawMessage("CT#$MOD[" + cl.getCharacterName() + "]#" + message + "#%")
+		writeClientLog(cl, "[LOCMOD]"+message)
+	}
+}
+
+func cmdGlobalMod(cl *Client, message string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You do not have permission to use that")
+	} else if len(message) == 0 {
+		cl.sendServerMessageOOC("Message is empty")
+	} else {
+		fullmessage := fmt.Sprintf("CT#$GLOBAL[M][%v][%s]#%s#%", cl.area.Areaid, cl.getCharacterName(), message)
+		client_list.sendGlobalModMessage(fullmessage)
+		writeClientLog(cl, "[GLOMOD]"+message)
 	}
 }
