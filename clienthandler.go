@@ -224,6 +224,13 @@ func handleClient(conn net.Conn) {
 			} else if out_msg != "" {
 				client.area.sendRawMessage(out_msg)
 			}
+
+		case "ZZ": // mod call
+			client_list.sendAllRawIf(fmt.Sprintf(
+				"ZZ#%s (%s) in %s#%%", client.getCharacterName(), client.IP.String(), client.getAreaName()),
+				func(c *Client) bool {
+					return c.is_mod
+				})
 		}
 	}
 }
