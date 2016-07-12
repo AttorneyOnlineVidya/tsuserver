@@ -30,6 +30,7 @@ type Area struct {
 	Name          string
 	Background    string
 	bglock        bool
+	status        string
 	clients       []*Client
 	lock          sync.Mutex
 	hp_def        int
@@ -90,6 +91,7 @@ func (a *Area) initialize() {
 	a.hp_def = 10
 	a.hp_pro = 10
 	a.taken_charids = make(map[int]*Client)
+	a.status = "IDLE"
 }
 
 func (a *Area) setDefHP(hp int) error {
@@ -206,4 +208,10 @@ func (a *Area) getClientByCharName(charname string) *Client {
 	}
 
 	return nil
+}
+
+func (a *Area) setAreaStatus(cl *Client, status string) {
+	a.status = status
+	a.sendServerMessageOOC(cl.getCharacterName() + " changed the area status to " + status)
+	writeClientLog(cl, "changed the area status to "+status)
 }

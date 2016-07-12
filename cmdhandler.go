@@ -388,3 +388,26 @@ func cmdRoll(cl *Client, max string) {
 func cmdHelp(cl *Client) {
 	cl.sendServerMessageOOC("A list of commands can be found here: https://github.com/AttorneyOnlineVidya/tsuserver/blob/master/README.md")
 }
+
+func cmdStatus(cl *Client, target string) {
+	if len(target) == 0 {
+		cl.sendServerMessageOOC("The area is currently set to " + cl.area.status)
+	} else {
+		switch strings.ToLower(target) {
+		case "idle":
+			cl.area.setAreaStatus(cl, "IDLE")
+		case "buildingopen":
+			cl.area.setAreaStatus(cl, "BUILDING-OPEN")
+		case "buildingfull":
+			cl.area.setAreaStatus(cl, "BUILDING-FULL")
+		case "casingopen":
+			cl.area.setAreaStatus(cl, "CASING-OPEN")
+		case "casingfull":
+			cl.area.setAreaStatus(cl, "CASING-FULL")
+		case "recess":
+			cl.area.setAreaStatus(cl, "RECESS")
+		default:
+			cl.sendServerMessageOOC("Couldn't recognize status. Try: idle, buildingopen, buildingfull, casingopen, casingfull, recess")
+		}
+	}
+}

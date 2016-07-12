@@ -227,6 +227,7 @@ func (cl Client) getPrintableAreaList() string {
 		if cl.area.Areaid == a.Areaid {
 			ret += " (*)"
 		}
+		ret += "\r\n[" + a.status + "]"
 	}
 	fmt.Println(ret)
 	return ret
