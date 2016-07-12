@@ -70,7 +70,7 @@ func cmdBackground(cl *Client, args []string) {
 	}
 }
 
-func cmdBgLock(cl *Client, args []string) {
+func cmdBgLock(cl *Client) {
 	if cl.is_mod == true {
 		if cl.area.bglock {
 			cl.area.bglock = false
@@ -202,7 +202,7 @@ func cmdBan(cl *Client, args []string) {
 	}
 }
 
-func cmdReloadBans(cl *Client, target string) {
+func cmdReloadBans(cl *Client) {
 	if !cl.is_mod {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
@@ -230,11 +230,11 @@ func cmdSwitch(cl *Client, name string) {
 	}
 }
 
-func cmdCharselect(cl *Client, args []string) {
+func cmdCharselect(cl *Client) {
 	cl.charSelect()
 }
 
-func cmdRandomChar(cl *Client, target string) {
+func cmdRandomChar(cl *Client) {
 	if cid, err := cl.area.randomFreeCharacterID(); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
@@ -330,6 +330,7 @@ func cmdNeed(cl *Client, message string) {
 			func(c *Client) bool {
 				return c.advert
 			})
+		writeClientLog(cl, "[NEED]"+message)
 	}
 }
 
@@ -340,5 +341,16 @@ func cmdAdvertToggle(cl *Client) {
 	} else {
 		cl.advert = true
 		cl.sendServerMessageOOC("Adverts toggled on.")
+	}
+}
+
+func cmdModAnnounce(cl *Client, message string) {
+	if cl.is_mod != true {
+		cl.sendServerMessageOOC("You do not have permission to use that")
+	} else if len(message) == 0 {
+		cl.sendServerMessageOOC("Message is empty.")
+	} else {
+		client_list.sendAllAnnouncement(message)
+		writeClientLog(cl, "used Mod Announcement: "+message)
 	}
 }

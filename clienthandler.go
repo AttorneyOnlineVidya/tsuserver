@@ -233,6 +233,7 @@ func handleClient(conn net.Conn) {
 				func(c *Client) bool {
 					return c.is_mod
 				})
+			writeClientLog(&client, "called a mod")
 		}
 	}
 }
@@ -528,17 +529,17 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		case "ban":
 			cmdBan(client, args)
 		case "reloadbans":
-			cmdReloadBans(client, target)
+			cmdReloadBans(client)
 		case "bg":
 			cmdBackground(client, args)
 		case "bglock":
-			cmdBgLock(client, args)
+			cmdBgLock(client)
 		case "switch":
 			cmdSwitch(client, target)
 		case "charselect":
-			cmdCharselect(client, args)
+			cmdCharselect(client)
 		case "randomchar":
-			cmdRandomChar(client, target)
+			cmdRandomChar(client)
 		case "pm":
 			cmdPM(client, target)
 		case "pos":
@@ -551,6 +552,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdNeed(client, target)
 		case "adverts":
 			cmdAdvertToggle(client)
+		case "announce":
+			cmdModAnnounce(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

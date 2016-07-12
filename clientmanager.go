@@ -340,3 +340,12 @@ func (clist *ClientList) sendAllRawIf(msg string, pred func(*Client) bool) {
 		}
 	}
 }
+
+func (clist *ClientList) sendAllAnnouncement(message string) {
+	clist.lock.Lock()
+	defer clist.lock.Unlock()
+
+	for i := range clist.clients {
+		clist.clients[i].sendServerMessageOOC("\r\n====ANNOUNCEMENT====\r\n------------------------------------\r\n" + message + "\r\n------------------------------------\r\n===================#%")
+	}
+}
