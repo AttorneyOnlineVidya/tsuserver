@@ -353,7 +353,7 @@ func cmdModAnnounce(cl *Client, message string) {
 	} else if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty.")
 	} else {
-		client_list.sendAllAnnouncement(message)
+		client_list.sendAllRaw("\r\n====ANNOUNCEMENT====\r\n------------------------------------\r\n" + message + "\r\n------------------------------------\r\n===================#%")
 		writeClientLog(cl, "used Mod Announcement: "+message)
 	}
 }
@@ -433,7 +433,7 @@ func cmdGlobalMod(cl *Client, message string) {
 		cl.sendServerMessageOOC("Message is empty")
 	} else {
 		fullmessage := fmt.Sprintf("CT#$GLOBAL[M][%v][%s]#%s#%", cl.area.Areaid, cl.getCharacterName(), message)
-		client_list.sendGlobalModMessage(fullmessage)
+		client_list.sendAllRaw(fullmessage)
 		writeClientLog(cl, "[GLOMOD]"+message)
 	}
 }
