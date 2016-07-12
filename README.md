@@ -29,6 +29,16 @@ Compile and run.
 
 * /pos (position) - Moves user to the specified position in court.
 	* (wit, def, pro, jud, hlp, hld)
+	
+* /g (message) - Sends a global message to everyone in the server
+	* /global - Toggles Global off/on
+	
+* /need (message) - Sends an advert to everyone in the server
+	* /adverts - Toggles adverts off/on
+
+* /randomchar - Changes you to a random free character
+
+* /motd - prints the MOTD to chat
 
 ## Mod Commands
 
@@ -48,6 +58,9 @@ Compile and run.
 * /reloadbans - Reloads the banlist
 
 * /bglock - Toggles the background lock in the area, preventing users from using /bg
+
+* /announce - Makes a server wide announcement
+
 
 ## License
 

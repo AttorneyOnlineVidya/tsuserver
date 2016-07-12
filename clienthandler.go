@@ -541,6 +541,18 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdPM(client, target)
 		case "pos":
 			cmdPos(client, target)
+		case "g":
+			cmdGlobalMessage(client, target)
+		case "global":
+			cmdGlobalToggle(client)
+		case "need":
+			cmdNeed(client, target)
+		case "adverts":
+			cmdAdvertToggle(client)
+		case "announce":
+			cmdModAnnounce(client, target)
+		case "motd":
+			cmdMOTD(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

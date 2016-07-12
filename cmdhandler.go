@@ -355,6 +355,12 @@ func cmdModAnnounce(cl *Client, message string) {
 	}
 }
 
-func cmdMOTD(cl *Client) {
-	cl.sendServerMessageOOC("\r\n========MOTD========\r\n" + config.MOTD + "\r\n===================")
+func cmdMOTD(cl *Client, message string) {
+	if len(message) == 0 {
+		cl.sendServerMessageOOC("\r\n========MOTD========\r\n" + config.MOTD + "\r\n===================")
+	} else if cl.is_mod {
+		config.MOTD = message
+		writeClientLog(cl, "changed the MOTD.")
+	}
+
 }
