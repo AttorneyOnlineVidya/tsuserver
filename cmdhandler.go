@@ -326,7 +326,7 @@ func cmdNeed(cl *Client, message string) {
 		cl.sendServerMessageOOC("Message is empty.")
 	} else {
 		client_list.sendAllRawIf(fmt.Sprintf(
-			"CT#$HOST#\r\n=======ADVERT=======\r\n"+cl.getCharacterName()+" in "+cl.getAreaName()+" needs "+message+"\r\n"+"===================#%"),
+			"CT#"+config.Reservedname+"#\r\n=======ADVERT=======\r\n"+cl.getCharacterName()+" in "+cl.getAreaName()+" needs "+message+"\r\n"+"===================#%"),
 			func(c *Client) bool {
 				return c.advert
 			})

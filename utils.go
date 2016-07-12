@@ -170,7 +170,7 @@ func msgStartsWithChar(str string) (string, string, error) {
 	return "", "", errors.New("Character name not found.")
 }
 
-func isOOCNameReserved(string name) bool {
+func isOOCNameReserved(name string) bool {
 	if name == config.Reservedname {
 		return true
 	}
