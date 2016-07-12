@@ -207,9 +207,16 @@ func (a *Area) getClientByCharName(charname string) *Client {
 
 func (a *Area) setAreaStatus(cl *Client, status string) {
 	a.lock.Lock()
-	a.lock.Unlock()
+	defer a.lock.Unlock()
 
 	a.status = status
 	a.sendServerMessageOOC(cl.getCharacterName() + " changed the area status to " + status)
 	writeClientLog(cl, "changed the area status to "+status)
+}
+
+func (a *Area) getAreaStatus(cl *Client) string {
+	a.lock.RLock()
+	defer a.lock.RUnlock()
+
+	return a.status
 }

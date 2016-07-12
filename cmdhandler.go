@@ -394,7 +394,7 @@ func cmdHelp(cl *Client) {
 
 func cmdStatus(cl *Client, target string) {
 	if len(target) == 0 {
-		cl.sendServerMessageOOC("The area is currently set to " + cl.area.status)
+		cl.sendServerMessageOOC("The area is currently set to " + cl.area.getAreaStatus())
 	} else {
 		switch strings.ToLower(target) {
 		case "idle":
