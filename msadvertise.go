@@ -22,6 +22,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"sync"
 	"time"
 )
 
@@ -29,14 +30,17 @@ func msAdvertiser() {
 	var conn net.Conn
 	var is_connected bool = false
 	var reader *bufio.Reader
+	var lock sync.Mutex
 
 	// start pinging the masterserver
 	ticker := time.NewTicker(15 * time.Second)
 	go func() {
 		for range ticker.C {
+			lock.Lock()
 			if is_connected {
 				conn.Write([]byte("PING#%"))
 			}
+			lock.Unlock()
 		}
 	}()
 
@@ -46,20 +50,25 @@ func msAdvertiser() {
 			if c, err := msConnect(); err != nil {
 				writeServerLog("Failed to connect to master server. Retrying.")
 				time.Sleep(10 * time.Second)
+				lock.Unlock()
 				continue
 			} else {
+				lock.Lock()
 				writeServerLog("Connected to master server.")
 				is_connected = true
 				conn = c
 				reader = bufio.NewReader(conn)
 				msSendInfo(conn)
+				lock.Unlock()
 			}
 		}
 
 		// read data
 		str, err := reader.ReadString('%')
 		if err != nil {
+			lock.Lock()
 			is_connected = false
+			lock.Unlock()
 			writeServerLog("Disconnected from master server. Retrying.")
 			continue
 		}
