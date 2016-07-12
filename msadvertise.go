@@ -50,7 +50,6 @@ func msAdvertiser() {
 			if c, err := msConnect(); err != nil {
 				writeServerLog("Failed to connect to master server. Retrying.")
 				time.Sleep(10 * time.Second)
-				lock.Unlock()
 				continue
 			} else {
 				lock.Lock()
