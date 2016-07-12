@@ -39,6 +39,7 @@ Compile and run.
 * /randomchar - Changes you to a random free character
 
 * /motd - prints the MOTD to chat
+	* If logged in as a mod you can change the MOTD. /motd (message)
 
 ## Mod Commands
 

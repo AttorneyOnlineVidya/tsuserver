@@ -541,7 +541,21 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdPM(client, target)
 		case "pos":
 			cmdPos(client, target)
+<<<<<<<<< Temporary merge branch 1
+=========
+		case "g":
+			cmdGlobalMessage(client, target)
+		case "global":
+			cmdGlobalToggle(client)
+		case "need":
+			cmdNeed(client, target)
+		case "adverts":
+			cmdAdvertToggle(client)
+		case "announce":
+			cmdModAnnounce(client, target)
+		case "motd":
 			cmdMOTD(client, target)
+>>>>>>>>> Temporary merge branch 2
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
