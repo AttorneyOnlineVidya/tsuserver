@@ -348,6 +348,6 @@ func (clist *ClientList) sendAllRaw(message string) {
 	defer clist.lock.Unlock()
 
 	for i := range clist.clients {
-		clist.clients[i].sendServerMessageOOC(message)
+		clist.clients[i].sendRawMessage(message)
 	}
 }

@@ -353,7 +353,7 @@ func cmdModAnnounce(cl *Client, message string) {
 	} else if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty.")
 	} else {
-		client_list.sendAllRaw("\r\n====ANNOUNCEMENT====\r\n------------------------------------\r\n" + message + "\r\n------------------------------------\r\n===================#%")
+		client_list.sendAllRaw("CT#$HOST#\r\n====ANNOUNCEMENT====\r\n------------------------------------\r\n" + message + "\r\n------------------------------------\r\n===================#%")
 		writeClientLog(cl, "used Mod Announcement: "+message)
 	}
 }
