@@ -41,7 +41,7 @@ type Area struct {
 
 func (a *Area) sendRawMessage(msg string) {
 	client_list.sendAllRawIf(msg, func(c *Client) bool {
-		return c.area == a
+		return c.getAreaPtr() == a
 	})
 }
 

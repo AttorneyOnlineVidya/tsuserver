@@ -214,6 +214,13 @@ func (cl Client) getAreaName() string {
 	return ""
 }
 
+func (cl *Client) getAreaPtr() *Area {
+	cl.lock.RLock()
+	defer cl.lock.RUnlock()
+
+	return cl.area
+}
+
 func (cl Client) getPrintableAreaList() string {
 	var ret string
 	for _, a := range config.Arealist {
