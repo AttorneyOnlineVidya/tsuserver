@@ -260,6 +260,11 @@ func parseMusic(rawmsg string, client *Client) error {
 		return err
 	}
 
+	// check for empty songname
+	if len(songname) == 0 {
+		return errors.New("Empty song name.")
+	}
+
 	// check if char id matches client
 	if charid != client.charid {
 		return errors.New("Char ID doesn't match client.")
