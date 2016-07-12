@@ -125,6 +125,7 @@ func (cl *Client) sendDone() {
 		encryptMessage(config.Guardpass, crypt_key) + "#%")
 	cl.sendRawMessage("DONE#%")
 	writeClientLog(cl, "CLIENT CONNECTED")
+	writeClientLog(cl, "HDID:"+cl.HDID)
 }
 
 func (cl *Client) charSelect() {

@@ -264,18 +264,31 @@ func parseMusic(rawmsg string, client *Client) error {
 	if charid != client.charid {
 		return errors.New("Char ID doesn't match client.")
 	}
-
-	// check if song name is in the music list
-	found := false
-	for _, v := range config.Musiclist {
-		if v.Name == songname {
-			found = true
-			duration = v.Duration
-			break
+	// Checks if using musiclist to change areas
+	if strings.HasPrefix(songname, ">") {
+		for _, a := range config.Arealist {
+			if strings.ToLower(songname[1:len(songname)]) == strings.ToLower(a.Name) {
+				client.changeAreaID(a.Areaid)
+				client.sendServerMessageOOC("Changed area to " + client.area.Name + ".")
+				writeClientLog(client, "Changed area to "+client.area.Name+".")
+				return nil
+			}
 		}
-	}
-	if !found {
-		return errors.New("This song is not on the list.")
+		client.sendServerMessageOOC("That area could not be found.")
+		return nil
+	} else {
+		// check if song name is in the music list
+		found := false
+		for _, v := range config.Musiclist {
+			if v.Name == songname {
+				found = true
+				duration = v.Duration
+				break
+			}
+		}
+		if !found {
+			return errors.New("This song is not on the list.")
+		}
 	}
 
 	// message is fine
