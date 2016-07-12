@@ -40,6 +40,10 @@ Compile and run.
 
 * /motd - prints the MOTD to chat
 	* If logged in as a mod you can change the MOTD. /motd (message)
+	
+* /roll (number) - Rolls a dice between 1 and 6 or 1 and number, min is 2, max is 9999
+
+* /help - Links to this readme.
 
 ## Mod Commands
 
