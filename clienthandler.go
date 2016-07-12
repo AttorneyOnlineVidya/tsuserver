@@ -270,6 +270,7 @@ func parseMusic(rawmsg string, client *Client) error {
 			if strings.ToLower(songname[1:len(songname)]) == strings.ToLower(a.Name) {
 				if err := client.changeAreaID(a.Areaid); err != nil {
 					client.sendServerMessageOOC(err.Error())
+					return err
 				} else {
 					client.sendServerMessageOOC("Changed area to " + client.area.Name + ".")
 					writeClientLog(client, "Changed area to "+client.area.Name+".")
