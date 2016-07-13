@@ -221,3 +221,17 @@ func (a *Area) getAreaStatus() string {
 
 	return a.status
 }
+
+func (a *Area) setDoc(doc string) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	a.docurl = doc
+}
+
+func (a *Area) getDoc() string {
+	a.lock.RLock()
+	defer a.lock.RUnlock()
+
+	return a.docurl
+}

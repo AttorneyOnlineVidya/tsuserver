@@ -442,13 +442,13 @@ func cmdSetDoc(cl *Client, URL string) {
 	if len(URL) == 0 {
 		cl.sendServerMessageOOC("Message is empty.")
 	} else {
-		cl.area.docurl = URL
+		cl.area.setDoc(URL)
 		cl.area.sendServerMessageOOC(cl.getCharacterName() + " changed the doc URL.")
 		writeClientLog(cl, "changed the doc URL:"+URL)
 	}
 }
 
 func cmdGetDoc(cl *Client) {
-	cl.sendServerMessageOOC("Doc: " + cl.area.docurl)
+	cl.sendServerMessageOOC("Doc: " + cl.area.getDoc())
 	writeClientLog(cl, "[DOC]HDID:"+cl.HDID)
 }
