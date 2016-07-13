@@ -55,7 +55,7 @@ Compile and run.
 
 * /announce - Makes a server wide announcement
 
-* /ban (target) - Disconnects the target and adds them to the banlist, must be IP
+* /ban (target) [reason] - Disconnects the target and adds them to the banlist, must be IP
 
 * /bglock - Toggles the background lock in the area, preventing users from using /bg
 
