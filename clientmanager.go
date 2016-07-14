@@ -23,6 +23,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -360,6 +361,16 @@ func (clist *ClientList) sendAllRaw(message string) {
 	for i := range clist.clients {
 		clist.clients[i].sendRawMessage(message)
 	}
+}
+
+func (clist *ClientList) sortedClientsByIP() []*Client {
+	clist.lock.RLock()
+	ret := make(ClientSortByIP, len(clist.clients))
+	copy(ret, clist.clients)
+	clist.lock.RUnlock()
+
+	sort.Sort(ret)
+	return ret
 }
 
 // ================

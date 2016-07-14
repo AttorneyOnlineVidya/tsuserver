@@ -523,6 +523,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdGetAllAreas(client)
 		case "login":
 			cmdLogin(client, args)
+		case "iplist":
+			cmdIpList(client)
 		case "mute":
 			cmdMute(client, target)
 		case "unmute":

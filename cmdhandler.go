@@ -77,6 +77,7 @@ func cmdGetArea(cl *Client, id string) {
 	}
 
 	cl.sendServerMessageOOC(ret)
+	writeClientLog(cl, "Used /getarea")
 }
 
 func cmdGetAllAreas(cl *Client) {
@@ -96,6 +97,7 @@ func cmdGetAllAreas(cl *Client) {
 		}
 	}
 	cl.sendServerMessageOOC(ret)
+	writeClientLog(cl, "Used /getareas")
 }
 
 func cmdBackground(cl *Client, args []string) {
@@ -154,6 +156,23 @@ func cmdLogin(cl *Client, args []string) {
 		cl.sendServerMessageOOC("Invalid password.")
 		writeClientLog(cl, "Tried to use mod login")
 	}
+}
+
+func cmdIpList(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You cannot use that command.")
+		return
+	}
+	ret := fmt.Sprintf("\r\n=== Clients ===")
+	for _, c := range client_list.sortedClientsByIP() {
+		ret += fmt.Sprintf("\r\nIP: %s; %s in %s",
+			c.IP.String(), c.getCharacterName(), c.getAreaName())
+		if c.is_mod {
+			ret += " (mod)"
+		}
+	}
+	cl.sendServerMessageOOC(ret)
+	writeClientLog(cl, "Used /iplist")
 }
 
 func cmdMute(cl *Client, target string) {
