@@ -30,6 +30,7 @@ func main() {
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(config.Port))
 	if err != nil {
 		log.Fatal("An error occurred starting the listening server.")
+		writeServerLog("An error occurred starting the listening server.")
 	}
 	log.Print("Starting server.")
 	writeServerLog("Starting server.")

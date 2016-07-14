@@ -233,6 +233,7 @@ func handleClient(conn net.Conn) {
 				func(c *Client) bool {
 					return c.is_mod
 				})
+			writeClientLog(&client, "used Call Mod")
 		}
 	}
 }
