@@ -17,12 +17,16 @@ Compile and run.
 
 * /area (number) - Changes user to that area, if blank will list current areas.
 
+* /getarea [id] - Lists characters in a given area, or only the current one if id is blank.
+
+* /getareas - Lists characters across all areas.
+
 * /bg (background)- Changes the background to one in the backgrounds list.
 
 * /charselect - Brings up the character select screen (Shrinks client)
 
 * /doc - Gives you the doc in use in the current area, heavily logged to discourage/detect bombings
-	*/setdoc (url) - Sets the doc in the current area.
+	* /setdoc (url) - Sets the doc in the current area.
 
 * /g (message) - Sends a global message to everyone in the server
 	* /global - Toggles Global off/on
@@ -60,6 +64,8 @@ Compile and run.
 * /bglock - Toggles the background lock in the area, preventing users from using /bg
 
 * /gm (message) - Same as global but gives you a [M]od tag. (global mod)
+
+* /iplist - Prints a list of all clients sorted by IP
 
 * /kick (target) - Disconnects the target from the server, can be IP, Character name or OOC name.
 	* Character name only kicks the target in your current area.

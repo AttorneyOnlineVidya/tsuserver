@@ -57,6 +57,7 @@ func cmdGetArea(cl *Client, id string) {
 			aptr = getAreaPtr(areaid)
 		} else {
 			cl.sendServerMessageOOC("Argument must be a number.")
+			return
 		}
 	}
 	if aptr == nil {
