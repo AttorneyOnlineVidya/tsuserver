@@ -44,6 +44,60 @@ func cmdArea(cl *Client, args []string) {
 	}
 }
 
+func cmdGetArea(cl *Client, id string) {
+	var aptr *Area
+	ret := "\r\n"
+
+	if len(id) == 0 {
+		// print current area
+		aptr = cl.getAreaPtr()
+	} else {
+		// print target area
+		if areaid, err := strconv.Atoi(id); err == nil {
+			aptr = getAreaPtr(areaid)
+		} else {
+			cl.sendServerMessageOOC("Argument must be a number.")
+		}
+	}
+	if aptr == nil {
+		cl.sendServerMessageOOC("Invalid area ID.")
+		return
+	}
+
+	ret += fmt.Sprintf("=== Area %d: %s ===", aptr.Areaid, aptr.Name)
+	for _, c := range aptr.sortedClientsByName() {
+		if cl.is_mod {
+			ret += fmt.Sprintf("\r\n%s; IP: %s", c.getCharacterName(), c.IP.String())
+			if c.is_mod {
+				ret += " (mod)"
+			}
+		} else {
+			ret += fmt.Sprintf("\r\n%s", c.getCharacterName())
+		}
+	}
+
+	cl.sendServerMessageOOC(ret)
+}
+
+func cmdGetAllAreas(cl *Client) {
+	var ret string
+	for i := range config.Arealist {
+		aptr := &config.Arealist[i]
+		ret += fmt.Sprintf("\r\n=== Area %d: %s ===", aptr.Areaid, aptr.Name)
+		for _, c := range aptr.sortedClientsByName() {
+			if cl.is_mod {
+				ret += fmt.Sprintf("\r\n%s; IP: %s", c.getCharacterName(), c.IP.String())
+				if c.is_mod {
+					ret += " (mod)"
+				}
+			} else {
+				ret += fmt.Sprintf("\r\n%s", c.getCharacterName())
+			}
+		}
+	}
+	cl.sendServerMessageOOC(ret)
+}
+
 func cmdBackground(cl *Client, args []string) {
 	if len(args) == 0 {
 		cl.sendServerMessageOOC("The current background is " + cl.area.Background)

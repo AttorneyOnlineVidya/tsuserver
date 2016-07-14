@@ -517,6 +517,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		switch strings.ToLower(cmd) {
 		case "area":
 			cmdArea(client, args)
+		case "getarea":
+			cmdGetArea(client, target)
+		case "getareas":
+			cmdGetAllAreas(client)
 		case "login":
 			cmdLogin(client, args)
 		case "mute":

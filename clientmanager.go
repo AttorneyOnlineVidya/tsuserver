@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net"
@@ -58,44 +59,43 @@ func (cl *Client) changeAreaID(areaid int) error {
 		return errors.New("Target area is the same as the current one.")
 	}
 	// find the correct area pointer
-	for i := range config.Arealist {
-		v := &config.Arealist[i]
-		if v.Areaid == areaid {
-			cl.lock.Lock()
-			defer cl.lock.Unlock()
+	v := getAreaPtr(areaid)
+	if v == nil {
+		return errors.New("Target area does not exist.")
+	}
 
-			last_charid := cl.charid
-			// change to a random character if taken
-			if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
-				if id, err := v.randomFreeCharacterID(); err == nil {
-					cl.charid = id
-					cl.resetPos()
-					cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
-						"#CID#" + strconv.Itoa(id) + "#%")
-					cl.sendServerMessageOOC("Your character is taken, changing to a random one.")
-				} else {
-					return errors.New("Unable to switch, no free characters in target area.")
-				}
-			}
-			// remove from old area if any
-			if cl.area != nil {
-				cl.area.removeClient(cl)
-				cl.area.removeTakenCharacter(last_charid)
-			}
-			// add to new area
-			v.addClient(cl)
-			v.addTakenCharacter(cl.charid, cl)
-			cl.area = v
-			// send current penalties
-			cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
-			cl.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", cl.area.hp_pro))
-			// send background
-			cl.sendRawMessage("BN#" + v.Background + "#%")
+	cl.lock.Lock()
+	defer cl.lock.Unlock()
 
-			return nil
+	last_charid := cl.charid
+	// change to a random character if taken
+	if !v.isCharIDAvailable(cl.charid) && cl.charid != -1 {
+		if id, err := v.randomFreeCharacterID(); err == nil {
+			cl.charid = id
+			cl.resetPos()
+			cl.sendRawMessage("PV#" + strconv.FormatUint(cl.clientid, 10) +
+				"#CID#" + strconv.Itoa(id) + "#%")
+			cl.sendServerMessageOOC("Your character is taken, changing to a random one.")
+		} else {
+			return errors.New("Unable to switch, no free characters in target area.")
 		}
 	}
-	return errors.New("Target area does not exist.")
+	// remove from old area if any
+	if cl.area != nil {
+		cl.area.removeClient(cl)
+		cl.area.removeTakenCharacter(last_charid)
+	}
+	// add to new area
+	v.addClient(cl)
+	v.addTakenCharacter(cl.charid, cl)
+	cl.area = v
+	// send current penalties
+	cl.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", cl.area.hp_def))
+	cl.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", cl.area.hp_pro))
+	// send background
+	cl.sendRawMessage("BN#" + v.Background + "#%")
+
+	return nil
 }
 
 func (cl *Client) sendRawMessage(msg string) {
@@ -201,6 +201,9 @@ func (cl *Client) disconnect() {
 }
 
 func (cl Client) getCharacterName() string {
+	if cl.charid == -1 {
+		return "CHAR_SELECT"
+	}
 	if isValidCharID(cl.charid) {
 		return config.Charlist[cl.charid]
 	}
@@ -357,4 +360,30 @@ func (clist *ClientList) sendAllRaw(message string) {
 	for i := range clist.clients {
 		clist.clients[i].sendRawMessage(message)
 	}
+}
+
+// ================
+
+type ClientSortByIP []*Client
+
+func (a ClientSortByIP) Len() int {
+	return len(a)
+}
+func (a ClientSortByIP) Less(i, j int) bool {
+	return bytes.Compare(a[i].IP, a[j].IP) == -1
+}
+func (a ClientSortByIP) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+type ClientSortByName []*Client
+
+func (a ClientSortByName) Len() int {
+	return len(a)
+}
+func (a ClientSortByName) Less(i, j int) bool {
+	return strings.Compare(a[i].getCharacterName(), a[j].getCharacterName()) == -1
+}
+func (a ClientSortByName) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
 }

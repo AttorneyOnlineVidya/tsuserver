@@ -21,6 +21,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"sync"
 	"time"
 )
@@ -204,6 +205,26 @@ func (a *Area) getClientByCharName(charname string) *Client {
 	}
 
 	return nil
+}
+
+func (a *Area) sortedClientsByIP() []*Client {
+	a.lock.RLock()
+	ret := make(ClientSortByIP, len(a.clients))
+	copy(ret, a.clients)
+	a.lock.RUnlock()
+
+	sort.Sort(ret)
+	return ret
+}
+
+func (a *Area) sortedClientsByName() []*Client {
+	a.lock.RLock()
+	ret := make(ClientSortByName, len(a.clients))
+	copy(ret, a.clients)
+	a.lock.RUnlock()
+
+	sort.Sort(ret)
+	return ret
 }
 
 func (a *Area) setAreaStatus(cl *Client, status string) {

@@ -150,6 +150,15 @@ func getCIDfromName(charname string) (int, error) {
 	return -1, errors.New("Character could not be found")
 }
 
+func getAreaPtr(areaid int) *Area {
+	for i := range config.Arealist {
+		if config.Arealist[i].Areaid == areaid {
+			return &config.Arealist[i]
+		}
+	}
+	return nil
+}
+
 // finds whether a string starts with a character name
 // if yes, returns the character name and the rest of the message
 // if not, returns an error
