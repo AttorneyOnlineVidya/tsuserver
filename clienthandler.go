@@ -26,6 +26,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 var next_clientid uint64 = 1
@@ -38,6 +40,7 @@ func handleClient(conn net.Conn) {
 
 	bufsize := 1024
 	buf := make([]byte, bufsize)
+	spamming := false
 
 	addrstring := conn.RemoteAddr().String()
 	ipstring := strings.SplitN(addrstring, ":", 2)[0]
@@ -63,9 +66,24 @@ func handleClient(conn net.Conn) {
 	char_list_pages := loadCharPages(10)
 	music_list_pages := loadMusicPages(10)
 
+	// 3 messages per second, max burst of 5
+	rate_limiter := rate.NewLimiter(3, 5)
+
 	client.sendRawMessage("decryptor#34#%")
 
 	for {
+		if isValidCharID(client.charid) && !rate_limiter.Allow() {
+			spamming = true
+			continue
+		}
+
+		if spamming {
+			spamming = false
+			client.sendServerMessageOOC("Stop spamming the game!")
+			writeServerLog(fmt.Sprintf("Client spamming. IP: %s, HD: %s.",
+				client.IP, client.HDID))
+		}
+
 		if n, err = conn.Read(buf); err != nil {
 			log.Printf("Closed connection from %s.", conn.RemoteAddr().String())
 			writeServerLog("Closed connection from " + conn.RemoteAddr().String())
