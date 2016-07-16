@@ -179,6 +179,7 @@ func msgStartsWithChar(str string) (string, string, error) {
 	return "", "", errors.New("Character name not found.")
 }
 
+// checks if OOC name is reserved
 func isOOCNameReserved(name string) bool {
 	if strings.HasPrefix(name, config.Reservedname) {
 		return true
