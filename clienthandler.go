@@ -180,6 +180,8 @@ func handleClient(conn net.Conn) {
 			}
 			if char, err := strconv.Atoi(split_msg[2]); err == nil {
 				client.changeCharacterID(char)
+				client.sendServerMessageOOC(client.getPrintableAreaList())
+				cmdMOTD(&client, "")
 			}
 
 		case "HP": // penalties

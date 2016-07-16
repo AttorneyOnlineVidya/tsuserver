@@ -129,7 +129,6 @@ func (cl *Client) sendDone() {
 	cl.sendRawMessage("DONE#%")
 	writeClientLog(cl, "CLIENT CONNECTED")
 	writeClientLog(cl, "HDID:"+cl.HDID)
-	cmdMOTD(cl, "")
 }
 
 func (cl *Client) charSelect() {
