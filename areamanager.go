@@ -56,11 +56,12 @@ func (a *Area) sendServerMessageOOC(msg string) {
 // time to receive the message
 func (a *Area) sendICMessage(msg string) {
 	a.lock.Lock()
-	defer a.lock.Unlock()
-
 	if a.canSendICMessage() {
 		a.updateLastMessage()
+		a.lock.Unlock()
 		a.sendRawMessage(msg)
+	} else {
+		a.lock.Unlock()
 	}
 }
 
