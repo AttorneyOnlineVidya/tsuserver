@@ -180,7 +180,7 @@ func msgStartsWithChar(str string) (string, string, error) {
 }
 
 func isOOCNameReserved(name string) bool {
-	if name == config.Reservedname {
+	if strings.HasPrefix(name, config.Reservedname) {
 		return true
 	}
 
