@@ -40,7 +40,6 @@ func handleClient(conn net.Conn) {
 
 	bufsize := 1024
 	buf := make([]byte, bufsize)
-	spamming := false
 
 	addrstring := conn.RemoteAddr().String()
 	ipstring := strings.SplitN(addrstring, ":", 2)[0]
@@ -66,8 +65,9 @@ func handleClient(conn net.Conn) {
 	char_list_pages := loadCharPages(10)
 	music_list_pages := loadMusicPages(10)
 
-	// 3 messages per second, max burst of 5
-	rate_limiter := rate.NewLimiter(3, 5)
+	// 3 messages per second, max burst of 4
+	rate_limiter := rate.NewLimiter(3, 4)
+	spamming := false
 
 	client.sendRawMessage("decryptor#34#%")
 
