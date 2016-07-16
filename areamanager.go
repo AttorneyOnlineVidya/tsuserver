@@ -52,6 +52,20 @@ func (a *Area) sendServerMessageOOC(msg string) {
 	a.sendRawMessage("CT#" + config.Reservedname + "#" + msg + "#%")
 }
 
+// same as sendRawMessage, but imposes a delay to give clients
+// time to receive the message
+func (a *Area) sendICMessage(msg string) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	if a.canSendICMessage() {
+		a.updateLastMessage()
+		a.sendRawMessage(msg)
+	} else {
+		return
+	}
+}
+
 // checks whether it is allowed to send another message already
 func (a *Area) canSendICMessage() bool {
 	return a.last_message.Add(200 * time.Millisecond).Before(time.Now())

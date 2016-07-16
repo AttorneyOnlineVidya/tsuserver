@@ -235,13 +235,7 @@ func handleClient(conn net.Conn) {
 			if out_msg, err := parseMessageIC(rawmsg, &client); err != nil {
 				continue
 			} else {
-				target_area := client.getAreaPtr()
-				if target_area.canSendICMessage() {
-					target_area.updateLastMessage()
-					target_area.sendRawMessage(out_msg)
-				} else {
-					continue
-				}
+				client.getAreaPtr().sendICMessage(out_msg)
 			}
 
 		case "CT": // OOC message
