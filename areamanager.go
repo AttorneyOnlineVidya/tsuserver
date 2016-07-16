@@ -39,6 +39,7 @@ type Area struct {
 	hp_pro        int
 	song_timer    *time.Timer
 	taken_charids map[int]*Client
+	last_message  time.Time
 }
 
 func (a *Area) sendRawMessage(msg string) {
@@ -49,6 +50,16 @@ func (a *Area) sendRawMessage(msg string) {
 
 func (a *Area) sendServerMessageOOC(msg string) {
 	a.sendRawMessage("CT#" + config.Reservedname + "#" + msg + "#%")
+}
+
+// checks whether it is allowed to send another message already
+func (a *Area) canSendICMessage() bool {
+	return a.last_message.Add(200 * time.Millisecond).Before(time.Now())
+}
+
+// resets the time of the last successful message
+func (a *Area) updateLastMessage() {
+	a.last_message = time.Now()
 }
 
 func (a *Area) getCharCount() int {
@@ -89,6 +100,7 @@ func (a *Area) initialize() {
 	a.hp_pro = 10
 	a.taken_charids = make(map[int]*Client)
 	a.status = "IDLE"
+	a.last_message = time.Now()
 }
 
 func (a *Area) setDefHP(hp int) error {
