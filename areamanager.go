@@ -61,8 +61,6 @@ func (a *Area) sendICMessage(msg string) {
 	if a.canSendICMessage() {
 		a.updateLastMessage()
 		a.sendRawMessage(msg)
-	} else {
-		return
 	}
 }
 
