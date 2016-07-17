@@ -67,7 +67,7 @@ func (a *Area) sendICMessage(msg string) {
 
 // checks whether it is allowed to send another message already
 func (a *Area) canSendICMessage() bool {
-	return a.last_message.Add(200 * time.Millisecond).Before(time.Now())
+	return a.last_message.Add(300 * time.Millisecond).Before(time.Now())
 }
 
 // resets the time of the last successful message
