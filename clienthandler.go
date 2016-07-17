@@ -65,8 +65,8 @@ func handleClient(conn net.Conn) {
 	char_list_pages := loadCharPages(10)
 	music_list_pages := loadMusicPages(10)
 
-	// 3 messages per second, max burst of 4
-	rate_limiter := rate.NewLimiter(3, 4)
+	// 5 messages per second, max burst of 8
+	rate_limiter := rate.NewLimiter(5, 8)
 	spamming := false
 
 	client.sendRawMessage("decryptor#34#%")
