@@ -139,9 +139,13 @@ func (pl *PollList) loadPolls() error {
 	pl.lock.Lock()
 	defer pl.lock.Unlock()
 
+	var tmp map[string]*Poll
+
 	if bytes, err := ioutil.ReadFile(polls_file); err == nil {
-		if err2 := json.Unmarshal(bytes, &pl.Polls); err2 != nil {
+		if err2 := json.Unmarshal(bytes, &tmp); err2 != nil {
 			return err2
+		} else {
+			pl.Polls = tmp
 		}
 	} else {
 		return err
