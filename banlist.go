@@ -21,88 +21,24 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"sync"
 )
+
+type BanList struct {
+	UserList
+}
 
 var banlist_file string = "storage/banlist.json"
 var ban_list *BanList = new(BanList)
 
-type Ban struct {
-	Iplist []string `json:"IP"`
-	Hdlist []string `json:"HD"`
-	Reason string   `json:"Reason,omitempty"`
-}
-
-type BanList struct {
-	Banlist []Ban
-	lock    sync.RWMutex
-}
-
 // returns a pointer to the specific ban if client is banned
 // also returns whether the user is IP banned or HDID banned or both
-func (bl *BanList) isBanned(cl *Client) (*Ban, bool, bool) {
-	bl.lock.RLock()
-	defer bl.lock.RUnlock()
-
-	ipbanned := false
-	hdbanned := false
-
-	for i := range bl.Banlist {
-		// check IPs
-		for _, ip := range bl.Banlist[i].Iplist {
-			if cl.IP.String() == ip {
-				ipbanned = true
-				break
-			}
-		}
-
-		// check HDIDs
-		for _, hd := range bl.Banlist[i].Hdlist {
-			if cl.HDID == hd {
-				hdbanned = true
-				break
-			}
-		}
-
-		if ipbanned || hdbanned {
-			return &bl.Banlist[i], ipbanned, hdbanned
-		}
-	}
-
-	return nil, false, false
+func (bl *BanList) isBanned(cl *Client) (*IPHDPair, bool, bool) {
+	return bl.isInList(cl)
 }
 
 // adds ban to the list
 func (bl *BanList) addBan(cl *Client, reason string) {
-	var ban *Ban
-
-	// check if such a ban already exists
-	if b, ipb, hdb := bl.isBanned(cl); b != nil {
-		ban = b
-
-		bl.lock.Lock()
-		if len(reason) > 0 {
-			ban.Reason = reason
-		}
-		if !ipb {
-			ban.Iplist = append(ban.Iplist, cl.IP.String())
-		}
-		if !hdb {
-			ban.Hdlist = append(ban.Hdlist, cl.HDID)
-		}
-		bl.lock.Unlock()
-	} else {
-		// add the IP and HDID
-		ban = &Ban{}
-		ban.Iplist = append(ban.Iplist, cl.IP.String())
-		ban.Hdlist = append(ban.Hdlist, cl.HDID)
-		ban.Reason = reason
-
-		// add to banlist
-		bl.lock.Lock()
-		bl.Banlist = append(bl.Banlist, *ban)
-		bl.lock.Unlock()
-	}
+	bl.addUser(cl, reason)
 
 	// write results to banlist file
 	bl.writeBanlist()
@@ -110,7 +46,7 @@ func (bl *BanList) addBan(cl *Client, reason string) {
 
 func (bl *BanList) writeBanlist() {
 	bl.lock.RLock()
-	bl_json, _ := json.MarshalIndent(bl.Banlist, "", "  ")
+	bl_json, _ := json.MarshalIndent(bl.Userlist, "", "  ")
 	bl.lock.RUnlock()
 
 	ioutil.WriteFile(banlist_file, bl_json, 0666)
@@ -121,7 +57,7 @@ func (bl *BanList) loadBanlist() error {
 	defer bl.lock.Unlock()
 
 	if bytes, err := ioutil.ReadFile(banlist_file); err == nil {
-		if err2 := json.Unmarshal(bytes, &bl.Banlist); err2 != nil {
+		if err2 := json.Unmarshal(bytes, &bl.Userlist); err2 != nil {
 			return err2
 		}
 	} else {
