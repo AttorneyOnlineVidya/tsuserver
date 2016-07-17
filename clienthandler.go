@@ -596,6 +596,16 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdSetDoc(client, target)
 		case "doc":
 			cmdGetDoc(client)
+		case "newpoll":
+			cmdNewPoll(client, target)
+		case "pollresults":
+			cmdPollResults(client, target)
+		case "closepoll":
+			cmdClosePoll(client, target)
+		case "vote":
+			cmdVote(client, args)
+		case "polls":
+			cmdPolls(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

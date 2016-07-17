@@ -34,7 +34,12 @@ func main() {
 	}
 	log.Print("Starting server.")
 	writeServerLog("Starting server.")
+
 	ban_list.loadBanlist()
+
+	poll_list.Polls = make(map[string]*Poll)
+	poll_list.loadPolls()
+
 	calcKeys()
 
 	if config.Advertise {

@@ -526,3 +526,82 @@ func cmdGetDoc(cl *Client) {
 	cl.sendServerMessageOOC("Doc: " + cl.area.getDoc())
 	writeClientLog(cl, "[DOC]HDID:"+cl.HDID)
 }
+
+func cmdNewPoll(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You do not have permission to use that.")
+		return
+	}
+
+	if len(target) == 0 {
+		cl.sendServerMessageOOC("Must specify a name.")
+		return
+	}
+
+	if err := poll_list.newPoll(target); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		cl.sendServerMessageOOC("Poll created.")
+	}
+}
+
+func cmdPollResults(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You do not have permission to use that.")
+		return
+	}
+
+	if msg, err := poll_list.getPollResults(target); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		cl.sendServerMessageOOC(msg)
+	}
+}
+
+func cmdClosePoll(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You do not have permission to use that.")
+		return
+	}
+
+	if err := poll_list.closePoll(target); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		cl.sendServerMessageOOC("Poll closed.")
+	}
+}
+
+func cmdPolls(cl *Client) {
+	polls := poll_list.getPollList()
+	ret := "Currently available polls: "
+	ret += strings.Join(polls, ", ")
+	ret += ". Use /vote to cast your vote."
+	cl.sendServerMessageOOC(ret)
+}
+
+func cmdVote(cl *Client, args []string) {
+	length := len(args)
+
+	if length < 2 {
+		cl.sendServerMessageOOC("Insufficient arguments. Usage: /vote [poll name] [yes/no].")
+		return
+	}
+
+	poll_name := strings.Join(args[0:length-1], " ")
+	vote_option := false
+
+	if args[length-1] == "yes" {
+		vote_option = true
+	} else if args[length-1] == "no" {
+		vote_option = false
+	} else {
+		cl.sendServerMessageOOC("Invalid vote, use yes or no.")
+		return
+	}
+
+	if err := poll_list.vote(cl, poll_name, vote_option); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		cl.sendServerMessageOOC("Vote cast / updated.")
+	}
+}

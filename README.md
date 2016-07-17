@@ -54,6 +54,10 @@ Compile and run.
 
 * /switch (character folder) - Changes the user to the specified character.
 	* Character must be in characters list.	
+	
+* /polls - Lists currently available polls for voting.
+
+* /vote (poll name) (yes/no) - Casts a vote on the given poll.
 
 ## Mod Commands
 
@@ -81,6 +85,12 @@ Compile and run.
 	
 * /unmute (target) - Unmutes the target, can be IP, Character name or OOC name.
 	* Character name only mutes the target in your current area.
+	
+* /newpoll (name) - Creates a new poll people can vote in.
+
+* /closepoll (name) - Closes a poll, preventing people from voting.
+
+* /pollresults (name) - Prints results of a given poll.
 
 
 ## License

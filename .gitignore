@@ -1,4 +1,5 @@
 *.exe
 *.log
 banlist.json
+polls.json
 config.toml
