@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"strconv"
@@ -35,10 +36,16 @@ func main() {
 	log.Print("Starting server.")
 	writeServerLog("Starting server.")
 
-	ban_list.loadBanlist()
+	if err := ban_list.loadBanlist(); err != nil {
+		fmt.Println(err.Error())
+		writeServerLog(err.Error())
+	}
 
 	poll_list.Polls = make(map[string]*Poll)
-	poll_list.loadPolls()
+	if err := poll_list.loadPolls(); err != nil {
+		fmt.Println(err.Error())
+		writeServerLog(err.Error())
+	}
 
 	calcKeys()
 

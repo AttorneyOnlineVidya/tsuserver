@@ -288,6 +288,7 @@ func cmdReloadBans(cl *Client) {
 	if err := ban_list.loadBanlist(); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
+		writeClientLog(cl, "Reloaded bans")
 		cl.sendServerMessageOOC("Banlist reloaded.")
 	}
 }
@@ -541,6 +542,10 @@ func cmdNewPoll(cl *Client, target string) {
 	if err := poll_list.newPoll(target); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
+		client_list.sendAllRaw(fmt.Sprintf(
+			"CT#%s#\r\n========POLL========\r\nA new poll called '%s' has been created. Use /vote to participate.\r\n===================#%%",
+			config.Reservedname, target))
+		writeClientLog(cl, "Created poll "+target)
 		cl.sendServerMessageOOC("Poll created.")
 	}
 }
@@ -554,6 +559,7 @@ func cmdPollResults(cl *Client, target string) {
 	if msg, err := poll_list.getPollResults(target); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
+		writeClientLog(cl, "Checked poll results for "+target)
 		cl.sendServerMessageOOC(msg)
 	}
 }
@@ -567,15 +573,24 @@ func cmdClosePoll(cl *Client, target string) {
 	if err := poll_list.closePoll(target); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
+		writeClientLog(cl, "Closed poll "+target)
+		client_list.sendAllRaw(fmt.Sprintf(
+			"CT#%s#\r\n========POLL========\r\nThe poll '%s' has been closed. Thank you for your votes.\r\n===================#%%",
+			config.Reservedname, target))
 		cl.sendServerMessageOOC("Poll closed.")
 	}
 }
 
 func cmdPolls(cl *Client) {
+	var ret string
 	polls := poll_list.getPollList()
-	ret := "Currently available polls: "
-	ret += strings.Join(polls, ", ")
-	ret += ". Use /vote to cast your vote."
+	if len(polls) == 0 {
+		ret = "There are currently no available polls."
+	} else {
+		ret = "Currently available polls: "
+		ret += strings.Join(polls, ", ")
+		ret += ". Use /vote to cast your vote."
+	}
 	cl.sendServerMessageOOC(ret)
 }
 
@@ -602,6 +617,21 @@ func cmdVote(cl *Client, args []string) {
 	if err := poll_list.vote(cl, poll_name, vote_option); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
+		writeClientLog(cl, "Voted in poll "+poll_name)
 		cl.sendServerMessageOOC("Vote cast / updated.")
+	}
+}
+
+func cmdReloadPolls(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	if err := poll_list.loadPolls(); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		writeClientLog(cl, "Reloaded polls")
+		cl.sendServerMessageOOC("Polls reloaded.")
 	}
 }

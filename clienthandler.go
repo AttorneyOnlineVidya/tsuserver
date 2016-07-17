@@ -606,6 +606,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdVote(client, args)
 		case "polls":
 			cmdPolls(client)
+		case "reloadpolls":
+			cmdReloadPolls(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
