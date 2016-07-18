@@ -26,6 +26,7 @@ import (
 )
 
 func main() {
+	initLogging()
 	loadConfig()
 
 	ln, err := net.Listen("tcp", ":"+strconv.Itoa(config.Port))
