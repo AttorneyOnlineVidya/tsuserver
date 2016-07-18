@@ -38,7 +38,7 @@ func writeClientLog(cl *Client, logstr string) {
 	}
 	logfile, err := os.OpenFile(clientlog_filename, os.O_APPEND, 0666)
 	if err != nil {
-		panic(err)
+		return
 	}
 	defer logfile.Close()
 
@@ -60,7 +60,7 @@ func writeServerLog(logstr string) {
 	}
 	logfile, err := os.OpenFile(serverlog_filename, os.O_APPEND, 0666)
 	if err != nil {
-		panic(err)
+		return
 	}
 	defer logfile.Close()
 
