@@ -223,6 +223,52 @@ func cmdUnmute(cl *Client, target string) {
 	}
 }
 
+func cmdDJ(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	cnt := 0
+	for _, v := range client_list.findAllTargets(cl, target) {
+		if !v.dj {
+			v.dj = true
+			writeClientLog(cl, " DJ'd "+v.IP.String())
+			v.sendServerMessageOOC("You have been DJ'd by a moderator.")
+			cnt++
+		}
+	}
+
+	if cnt == 0 {
+		cl.sendServerMessageOOC("No DJ targets found.")
+	} else {
+		cl.sendServerMessageOOC(fmt.Sprintf("DJ'd %d client(s).", cnt))
+	}
+}
+
+func cmdUnDJ(cl *Client, target string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	cnt := 0
+	for _, v := range client_list.findAllTargets(cl, target) {
+		if v.dj {
+			v.dj = false
+			writeClientLog(cl, " unDJ'd "+v.IP.String())
+			v.sendServerMessageOOC("You have been unDJ'd by a moderator.")
+			cnt++
+		}
+	}
+
+	if cnt == 0 {
+		cl.sendServerMessageOOC("No unDJ targets found.")
+	} else {
+		cl.sendServerMessageOOC(fmt.Sprintf("UnDJ'd %d client(s).", cnt))
+	}
+}
+
 func cmdKick(cl *Client, target string) {
 	if !cl.is_mod {
 		cl.sendServerMessageOOC("Invalid command.")

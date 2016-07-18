@@ -68,6 +68,10 @@ Compile and run.
 
 * /bglock - Toggles the background lock in the area, preventing users from using /bg
 
+* /dj (target) - Enables a user to play music
+
+* /undj (target) - Disables a user from playing music
+
 * /gm (message) - Same as global but gives you a [M]od tag. (global mod)
 
 * /iplist - Prints a list of all clients sorted by IP

@@ -57,6 +57,7 @@ func handleClient(conn net.Conn) {
 	client.pos = ""
 	client.advert = true
 	client.global = true
+	client.dj = true
 
 	next_clientid += 1
 	client_list.addClient(&client)
@@ -272,6 +273,10 @@ func parseMusic(rawmsg string, client *Client) error {
 	// check if client is muted
 	if client.muted {
 		return errors.New("Cannot play music, client is muted.")
+	}
+	// check if client is unDJ'd
+	if !client.dj {
+		return errors.New("Cannot play music, client is unDJ'd.")
 	}
 
 	// check message format
@@ -607,6 +612,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdPolls(client)
 		case "reloadpolls":
 			cmdReloadPolls(client)
+		case "dj":
+			cmdDJ(client, target)
+		case "undj":
+			cmdUnDJ(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
