@@ -149,7 +149,7 @@ func (a *Area) playMusic(songname string, charid int, duration int) {
 	}
 
 	a.song_timer = time.AfterFunc(time.Second*time.Duration(duration), func() {
-		a.playMusic(songname, charid, duration)
+		a.playMusic(songname, -1, duration)
 	})
 }
 
