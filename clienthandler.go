@@ -234,11 +234,7 @@ func handleClient(conn net.Conn) {
 			}
 
 		case "MS": // IC message
-			if out_msg, err := parseMessageIC(rawmsg, &client); err != nil {
-				continue
-			} else {
-				client.getAreaPtr().sendICMessage(out_msg)
-			}
+			parseMessageIC(rawmsg, &client)
 
 		case "CT": // OOC message
 			if out_msg, err := parseMessageOOC(rawmsg, &client); err != nil {
@@ -477,7 +473,10 @@ func parseMessageIC(rawmsg string, client *Client) (string, error) {
 	ret := fmt.Sprintf("MS#%s#%s#%s#%s#%s#%s#%s#%s#%d#%s#%s#%s#%d#%s#%s#%%",
 		msgtype, preanim, foldername, anim, text, pos, sfx, animtype,
 		client.charid, sfxdelay, button, unk, client.charid, ding, color)
-	writeClientLog(client, "[IC] "+text)
+
+	if client.getAreaPtr().sendICMessage(ret, len(text)) {
+		writeClientLog(client, "[IC] "+text)
+	}
 
 	return ret, nil
 }

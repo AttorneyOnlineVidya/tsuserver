@@ -39,7 +39,7 @@ type Area struct {
 	hp_pro        int
 	song_timer    *time.Timer
 	taken_charids map[int]*Client
-	last_message  time.Time
+	next_message  time.Time
 }
 
 func (a *Area) sendRawMessage(msg string) {
@@ -54,24 +54,30 @@ func (a *Area) sendServerMessageOOC(msg string) {
 
 // same as sendRawMessage, but imposes a delay to give clients
 // time to receive the message
-func (a *Area) sendICMessage(msg string) {
+func (a *Area) sendICMessage(msg string, length int) bool {
 	a.lock.Lock()
 	defer a.lock.Unlock()
 
 	if a.canSendICMessage() {
 		a.sendRawMessage(msg)
-		a.updateLastMessage()
+		a.updateNextMessage(length)
+		return true
 	}
+	return false
 }
 
 // checks whether it is allowed to send another message already
 func (a *Area) canSendICMessage() bool {
-	return a.last_message.Add(300 * time.Millisecond).Before(time.Now())
+	return time.Now().After(a.next_message)
 }
 
 // resets the time of the last successful message
-func (a *Area) updateLastMessage() {
-	a.last_message = time.Now()
+func (a *Area) updateNextMessage(length int) {
+	delay := 100 + 60*length
+	if delay > 3000 {
+		delay = 3000
+	}
+	a.next_message = time.Now().Add(time.Duration(delay) * time.Millisecond)
 }
 
 func (a *Area) getCharCount() int {
@@ -112,7 +118,7 @@ func (a *Area) initialize() {
 	a.hp_pro = 10
 	a.taken_charids = make(map[int]*Client)
 	a.status = "IDLE"
-	a.last_message = time.Now()
+	a.next_message = time.Now()
 }
 
 func (a *Area) setDefHP(hp int) error {
