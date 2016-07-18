@@ -59,8 +59,8 @@ func (a *Area) sendICMessage(msg string) {
 	defer a.lock.Unlock()
 
 	if a.canSendICMessage() {
-		a.updateLastMessage()
 		a.sendRawMessage(msg)
+		a.updateLastMessage()
 	}
 }
 
