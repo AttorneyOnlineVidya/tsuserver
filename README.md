@@ -82,7 +82,7 @@ Compile and run.
 * /mute (target) - Mutes the target, can be IP, Character name or OOC name.
 	* Character name only mutes the target in your current area.
 	
-* /reloadbans - Reloads the banlist
+* /reloadbans - Reloads the banlist from its file.
 	
 * /unmute (target) - Unmutes the target, can be IP, Character name or OOC name.
 	* Character name only mutes the target in your current area.
@@ -92,6 +92,8 @@ Compile and run.
 * /closepoll (name) - Closes a poll, preventing people from voting.
 
 * /pollresults (name) - Prints results of a given poll.
+
+* /reloadpolls - Reloads polls from their file.
 
 
 ## License
