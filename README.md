@@ -24,6 +24,7 @@ Compile and run.
 * /bg (background)- Changes the background to one in the backgrounds list.
 
 * /charselect - Brings up the character select screen (Shrinks client)
+	* If logged in as a mod you can /charselect (target)
 
 * /doc - Gives you the doc in use in the current area, heavily logged to discourage/detect bombings
 	* /setdoc (url) - Sets the doc in the current area.
