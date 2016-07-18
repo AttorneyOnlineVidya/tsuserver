@@ -563,7 +563,7 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 		case "switch":
 			cmdSwitch(client, target)
 		case "charselect":
-			cmdCharselect(client)
+			cmdCharselect(client, target)
 		case "randomchar":
 			cmdRandomChar(client)
 		case "pm":

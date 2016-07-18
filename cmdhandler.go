@@ -308,8 +308,25 @@ func cmdSwitch(cl *Client, name string) {
 	}
 }
 
-func cmdCharselect(cl *Client) {
-	cl.charSelect()
+func cmdCharselect(cl *Client, target string) {
+	if len(target) == 0 {
+		cl.charSelect()
+	} else if cl.is_mod {
+		cnt := 0
+		for _, v := range client_list.findAllTargets(cl, target) {
+			v.charSelect()
+			writeClientLog(cl, " charselected "+v.IP.String())
+			v.sendServerMessageOOC("A moderator forced you into character selection.")
+			cnt++
+		}
+		if cnt == 0 {
+			cl.sendServerMessageOOC("No targets found.")
+		} else {
+			cl.sendServerMessageOOC(fmt.Sprintf("Forced %d client(s) into character selection.", cnt))
+		}
+	} else {
+		cl.sendServerMessageOOC("Insufficient permissions.")
+	}
 }
 
 func cmdRandomChar(cl *Client) {

@@ -132,6 +132,10 @@ func (cl *Client) sendDone() {
 }
 
 func (cl *Client) charSelect() {
+	if !isValidCharID(cl.charid) {
+		return
+	}
+
 	cl.area.removeTakenCharacter(cl.charid)
 	cl.charid = -1
 	cl.resetPos()
