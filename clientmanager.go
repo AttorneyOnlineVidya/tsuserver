@@ -41,6 +41,7 @@ type Client struct {
 	oocname  string
 	is_mod   bool
 	muted    bool
+	dj       bool
 	global   bool
 	advert   bool
 	lock     sync.RWMutex
