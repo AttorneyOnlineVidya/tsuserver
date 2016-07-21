@@ -219,6 +219,21 @@ func handleClient(conn net.Conn) {
 			}
 			cmdUnmute(&client, split_msg[1])
 
+		case "opKICK": // /kick with guard
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			cmdKick(&client, split_msg[1])
+
+		case "opBAN": // /Ban with guard
+			split_msg := strings.Split(rawmsg, "#")
+			if len(split_msg) != 3 {
+				continue
+			}
+			split_ban := strings.Split(split_msg[1], " ")
+			cmdBan(&client, split_ban)
+
 		case "RT": // WT/CE buttons
 			split_msg := strings.Split(rawmsg, "#")
 			if len(split_msg) != 3 {
