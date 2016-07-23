@@ -217,7 +217,7 @@ func (a *Area) randomFreeCharacterID() (int, error) {
 	}
 
 	randid := rng.Intn(len(avail_ids))
-	return randid, nil
+	return avail_ids[randid], nil
 }
 
 func (a *Area) getClientByCharName(charname string) *Client {
