@@ -39,6 +39,7 @@ type PollList struct {
 type Poll struct {
 	UserList
 	Name        string    `json:"Name"`
+	Description string    `json:"Description"`
 	TimeStarted time.Time `json:"time_started"`
 	Closed      bool
 }
@@ -78,7 +79,22 @@ func (pl *PollList) getPollResults(name string) (string, error) {
 	return ret, nil
 }
 
-func (pl *PollList) newPoll(name string) error {
+func (pl *PollList) getPollDescription(name string) (string, error) {
+	pl.lock.RLock()
+	defer pl.lock.RUnlock()
+
+	p, ok := pl.Polls[name]
+	if !ok {
+		return "", errors.New("Poll not found.")
+	}
+
+	ret := "Poll title: " + p.Name + "\r\nPoll Description: " + p.Description
+
+	return ret, nil
+
+}
+
+func (pl *PollList) newPoll(name string, description string) error {
 	pl.lock.Lock()
 
 	if _, ok := pl.Polls[name]; ok {
@@ -88,6 +104,7 @@ func (pl *PollList) newPoll(name string) error {
 
 	p := Poll{}
 	p.Name = name
+	p.Description = description
 	p.Closed = false
 	p.TimeStarted = time.Now()
 

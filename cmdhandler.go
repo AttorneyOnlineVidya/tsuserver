@@ -597,18 +597,21 @@ func cmdNewPoll(cl *Client, target string) {
 		return
 	}
 
-	if len(target) == 0 {
-		cl.sendServerMessageOOC("Must specify a name.")
+	split_msg := strings.SplitN(target, " ", 2)
+	if len(split_msg) != 2 {
+		cl.sendServerMessageOOC("Invalid poll format.")
 		return
 	}
+	description := split_msg[1]
+	name := split_msg[0]
 
-	if err := poll_list.newPoll(target); err != nil {
+	if err := poll_list.newPoll(name, description); err != nil {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
 		client_list.sendAllRaw(fmt.Sprintf(
-			"CT#%s#\r\n========POLL========\r\nA new poll called '%s' has been created. Use /vote to participate.\r\n===================#%%",
-			config.Reservedname, target))
-		writeClientLog(cl, "Created poll "+target)
+			"CT#%s#\r\n========POLL========\r\nA new poll called '%s' has been created. It's description is: %s \r\nUse /vote to participate.\r\n===================#%%",
+			config.Reservedname, name, description))
+		writeClientLog(cl, "Created poll "+name+" with the description: "+description)
 		cl.sendServerMessageOOC("Poll created.")
 	}
 }
@@ -625,6 +628,19 @@ func cmdPollResults(cl *Client, target string) {
 		writeClientLog(cl, "Checked poll results for "+target)
 		cl.sendServerMessageOOC(msg)
 	}
+}
+
+func cmdPollInfo(cl *Client, target string) {
+	if len(target) == 0 {
+		cl.sendServerMessageOOC("Must specify a poll title.")
+		return
+	}
+	if desc, err := poll_list.getPollDescription(target); err != nil {
+		cl.sendServerMessageOOC(err.Error())
+	} else {
+		cl.sendServerMessageOOC(desc)
+	}
+
 }
 
 func cmdClosePoll(cl *Client, target string) {
@@ -652,7 +668,7 @@ func cmdPolls(cl *Client) {
 	} else {
 		ret = "Currently available polls: "
 		ret += strings.Join(polls, ", ")
-		ret += ". Use /vote to cast your vote."
+		ret += ".\r\nUse /pollinfo poll to see the description. Use /vote to cast your vote."
 	}
 	cl.sendServerMessageOOC(ret)
 }

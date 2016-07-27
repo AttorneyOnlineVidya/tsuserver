@@ -226,7 +226,7 @@ func handleClient(conn net.Conn) {
 			}
 			cmdKick(&client, split_msg[1])
 
-		case "opBAN": // /Ban with guard
+		case "opBAN": // /ban with guard
 			split_msg := strings.Split(rawmsg, "#")
 			if len(split_msg) != 3 {
 				continue
@@ -625,6 +625,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdVote(client, args)
 		case "polls":
 			cmdPolls(client)
+		case "pollinfo":
+			cmdPollInfo(client, target)
 		case "reloadpolls":
 			cmdReloadPolls(client)
 		case "dj":
