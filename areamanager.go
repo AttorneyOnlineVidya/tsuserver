@@ -33,6 +33,7 @@ type Area struct {
 	bglock        bool
 	status        string
 	docurl        string
+	HPLog         []string
 	clients       []*Client
 	lock          sync.RWMutex
 	hp_def        int
@@ -275,4 +276,15 @@ func (a *Area) getDoc() string {
 	defer a.lock.RUnlock()
 
 	return a.docurl
+}
+
+func (a *Area) judgeLog(cl *Client, action string) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+	if len(a.HPLog) >= 10 {
+		a.HPLog = append(a.HPLog[:0], a.HPLog[1:]...)
+		a.HPLog = append(a.HPLog, cl.getCharacterName()+"("+cl.IP.String()+")"+action)
+	} else {
+		a.HPLog = append(a.HPLog, cl.getCharacterName()+"("+cl.IP.String()+")"+action)
+	}
 }

@@ -76,6 +76,8 @@ Compile and run.
 
 * /iplist - Prints a list of all clients sorted by IP
 
+* /judgelog - Prints a list of the last 10 characters that changed HP bars or WT/CE in current area
+
 * /kick (target) - Disconnects the target from the server, can be IP, Character name or OOC name.
 	* Character name only kicks the target in your current area.
 	

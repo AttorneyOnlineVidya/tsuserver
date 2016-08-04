@@ -194,12 +194,14 @@ func handleClient(conn net.Conn) {
 				if split_msg[1] == "1" {
 					if err := client.area.setDefHP(val); err == nil {
 						client.area.sendRawMessage(fmt.Sprintf("HP#1#%d#%%", val))
+						client.area.judgeLog(&client, " changed health bar")
 						writeClientLog(&client, "changed health bar")
 
 					}
 				} else if split_msg[1] == "2" {
 					if err := client.area.setProHP(val); err == nil {
 						client.area.sendRawMessage(fmt.Sprintf("HP#2#%d#%%", val))
+						client.area.judgeLog(&client, " changed health bar")
 						writeClientLog(&client, "changed health bar")
 					}
 				}
@@ -241,6 +243,7 @@ func handleClient(conn net.Conn) {
 			}
 			if split_msg[1] == "testimony1" || split_msg[1] == "testimony2" {
 				client.area.sendRawMessage(fmt.Sprintf("RT#%s#%", split_msg[1]))
+				client.area.judgeLog(&client, " used WT/CE")
 				writeClientLog(&client, "Used WT/CE")
 			}
 
@@ -633,6 +636,8 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdDJ(client, target)
 		case "undj":
 			cmdUnDJ(client, target)
+		case "judgelog":
+			cmdJudgeLog(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

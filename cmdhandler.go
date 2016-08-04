@@ -609,7 +609,7 @@ func cmdNewPoll(cl *Client, target string) {
 		cl.sendServerMessageOOC(err.Error())
 	} else {
 		client_list.sendAllRaw(fmt.Sprintf(
-			"CT#%s#\r\n========POLL========\r\nA new poll called '%s' has been created. It's description is: %s \r\nUse /vote to participate.\r\n===================#%%",
+			"CT#%s#\r\n========POLL========\r\nA new poll called %s has been created. It's description is: %s \r\nUse /vote to participate.\r\n===================#%%",
 			config.Reservedname, name, description))
 		writeClientLog(cl, "Created poll "+name+" with the description: "+description)
 		cl.sendServerMessageOOC("Poll created.")
@@ -713,4 +713,20 @@ func cmdReloadPolls(cl *Client) {
 		writeClientLog(cl, "Reloaded polls")
 		cl.sendServerMessageOOC("Polls reloaded.")
 	}
+}
+
+func cmdJudgeLog(cl *Client) {
+	var aptr = cl.getAreaPtr()
+	var ret string
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	ret += fmt.Sprintf("=== Area %d: %s ===", aptr.Areaid, aptr.Name)
+	for _, v := range aptr.HPLog {
+		ret += fmt.Sprintf("\r\n%s", v)
+	}
+
+	cl.sendServerMessageOOC(ret)
+
 }
