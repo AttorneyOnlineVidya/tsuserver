@@ -159,19 +159,20 @@ func (a *Area) playMusic(songname string, charid int, duration int) {
 	})
 }
 
-func (a *Area) changeBackground(name string) error {
+func (a *Area) changeBackground(name string, is_mod bool) error {
 	// check if said background exists
-	bg, err := stringInSlice(name, config.Backgroundlist, false)
-	if err != nil {
-		return errors.New("This background does not exist.")
+	if !is_mod {
+		_, err := stringInSlice(name, config.Backgroundlist, false)
+		if err != nil {
+			return errors.New("This background does not exist.")
+		}
 	}
-
 	a.lock.Lock()
 	defer a.lock.Unlock()
 
 	// change background
-	a.Background = bg
-	a.sendRawMessage("BN#" + bg + "#%")
+	a.Background = name
+	a.sendRawMessage("BN#" + name + "#%")
 
 	writeServerLog(fmt.Sprintf("Background in Area %d changed to %s.",
 		a.Areaid, a.Background))

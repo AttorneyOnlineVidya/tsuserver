@@ -107,7 +107,7 @@ func cmdBackground(cl *Client, args []string) {
 		cl.sendServerMessageOOC("The current background is " + cl.area.Background)
 	} else if cl.area.bglock == true {
 		if cl.is_mod == true {
-			if err := cl.area.changeBackground(args[0]); err != nil {
+			if err := cl.area.changeBackground(args[0], cl.is_mod); err != nil {
 				cl.sendServerMessageOOC("Background not found.")
 			} else {
 				cl.area.sendServerMessageOOC(fmt.Sprintf("%s changed background to %s.",
@@ -118,7 +118,7 @@ func cmdBackground(cl *Client, args []string) {
 			cl.sendServerMessageOOC("A moderator has locked the background")
 		}
 	} else {
-		if err := cl.area.changeBackground(args[0]); err != nil {
+		if err := cl.area.changeBackground(args[0], cl.is_mod); err != nil {
 			cl.sendServerMessageOOC("Background not found.")
 		} else {
 			cl.area.sendServerMessageOOC(fmt.Sprintf("%s changed background to %s.",
