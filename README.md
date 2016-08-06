@@ -50,6 +50,8 @@ Compile and run.
 
 * /roll (number) - Rolls a dice between 1 and 6 or 1 and number, min is 2, max is 9999
 
+* /coinflip - Flips a coin
+
 * /status (status) - If blank displays current area status.
 	* Statuses are: idle, buildingopen, buildingfull, casingopen, casingfull, recess
 
@@ -71,6 +73,8 @@ Compile and run.
 * /dj (target) - Enables a user to play music
 
 * /undj (target) - Disables a user from playing music
+
+* /play (song.mp3) - Plays a song if it isnt in the music list.
 
 * /gm (message) - Same as global but gives you a [M]od tag. (global mod)
 

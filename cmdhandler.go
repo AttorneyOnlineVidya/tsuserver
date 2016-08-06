@@ -20,6 +20,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -526,6 +527,15 @@ func cmdRoll(cl *Client, max string) {
 	}
 }
 
+func cmdCoinFlip(cl *Client) {
+	switch rand.Intn(2) {
+	case 0:
+		cl.area.sendServerMessageOOC(cl.getCharacterName() + " flipped a coin and got heads.")
+	case 1:
+		cl.area.sendServerMessageOOC(cl.getCharacterName() + " flipped a coin and got tails.")
+	}
+}
+
 func cmdHelp(cl *Client) {
 	cl.sendServerMessageOOC("A list of commands can be found here: https://github.com/AttorneyOnlineVidya/tsuserver/blob/master/README.md")
 }
@@ -729,4 +739,13 @@ func cmdJudgeLog(cl *Client) {
 
 	cl.sendServerMessageOOC(ret)
 
+}
+
+func cmdModPlay(cl *Client, songname string) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	cl.area.playMusic(songname, cl.charid, -1)
+	writeClientLog(cl, " changed music to "+songname)
 }

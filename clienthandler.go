@@ -638,6 +638,10 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdUnDJ(client, target)
 		case "judgelog":
 			cmdJudgeLog(client)
+		case "coinflip":
+			cmdCoinFlip(client)
+		case "play":
+			cmdModPlay(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
