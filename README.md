@@ -13,6 +13,8 @@ around, hoping for better performance and more flexibility.
 
 Compile and run.
 
+[tsuserver documentation](https://docs.google.com/document/d/10RH8MRbdiyKEEAzIQPB4dXJcvhROwdWXmPfgsuk3whU/edit)
+
 ## User Commands
 
 * /area (number) - Changes user to that area, if blank will list current areas.
@@ -60,6 +62,8 @@ Compile and run.
 	
 * /polls - Lists currently available polls for voting.
 
+* /pollinfo (poll name) - Lists the info for a poll.
+
 * /vote (poll name) (yes/no) - Casts a vote on the given poll.
 
 ## Mod Commands
@@ -97,7 +101,9 @@ Compile and run.
 * /unmute (target) - Unmutes the target, can be IP, Character name or OOC name.
 	* Character name only mutes the target in your current area.
 	
-* /newpoll (name) - Creates a new poll people can vote in.
+* /newpoll (name) (description) - Creates a new poll people can vote in.
+	* First word is the poll name, after that is the description
+	* /newpoll Adachi Should Adachi be removed? - New poll called "Adachi" with the description.
 
 * /closepoll (name) - Closes a poll, preventing people from voting.
 
