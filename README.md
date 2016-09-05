@@ -36,6 +36,10 @@ Compile and run.
 	
 * /help - Links to this readme.
 
+* /lockarea (password) - Locks the area with (password), area will unlock when the last person leaves.
+
+* /unlockarea - Unlocks the current area
+
 * /motd - prints the MOTD to chat
 	* If logged in as a mod you can change the MOTD. /motd (message)
 	
@@ -93,10 +97,14 @@ Compile and run.
 	
 * /login (password) - Logs client in as moderator.
 
+* /lockable - Toggles the current area between lockable and unlockable for normal users.
+
 * /mute (target) - Mutes the target, can be IP, Character name or OOC name.
 	* Character name only mutes the target in your current area.
 	
 * /reloadbans - Reloads the banlist from its file.
+
+* /reloadmusic - Reloads the musiclist.
 	
 * /unmute (target) - Unmutes the target, can be IP, Character name or OOC name.
 	* Character name only mutes the target in your current area.
