@@ -30,7 +30,11 @@ type Area struct {
 	Areaid        int
 	Name          string
 	Background    string
+	IsHidden      bool
 	bglock        bool
+	password      string
+	ispassworded  bool
+	canbelocked   bool
 	status        string
 	docurl        string
 	HPLog         []string
@@ -109,6 +113,9 @@ func (a *Area) removeClient(c *Client) {
 	for i, v := range a.clients {
 		if c == v {
 			a.clients = append(a.clients[:i], a.clients[i+1:]...)
+			if len(a.clients) == 0 {
+				a.ispassworded = false
+			}
 			return
 		}
 	}
@@ -120,6 +127,7 @@ func (a *Area) initialize() {
 	a.taken_charids = make(map[int]*Client)
 	a.status = "IDLE"
 	a.next_message = time.Now()
+	a.canbelocked = false
 }
 
 func (a *Area) setDefHP(hp int) error {

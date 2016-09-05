@@ -28,13 +28,14 @@ import (
 func cmdArea(cl *Client, args []string) {
 	if len(args) == 0 {
 		cl.sendServerMessageOOC(cl.getPrintableAreaList())
-	} else if len(args) == 1 {
+	} else if len(args) == 1 || len(args) == 2 {
+		args = append(args, "")
 		targetarea, err := strconv.Atoi(args[0])
 		if err != nil {
 			cl.sendServerMessageOOC("The argument must be a number.")
 			return
 		}
-		if err := cl.changeAreaID(targetarea); err != nil {
+		if err := cl.changeAreaID(targetarea, args[1]); err != nil {
 			cl.sendServerMessageOOC(err.Error())
 		} else {
 			cl.sendServerMessageOOC("Changed area to " + cl.area.Name + ".")
@@ -86,6 +87,9 @@ func cmdGetAllAreas(cl *Client) {
 	var ret string
 	for i := range config.Arealist {
 		aptr := &config.Arealist[i]
+		if !cl.is_mod && aptr.IsHidden {
+			continue
+		}
 		ret += fmt.Sprintf("\r\n=== Area %d: %s ===", aptr.Areaid, aptr.Name)
 		for _, c := range aptr.sortedClientsByName() {
 			if cl.is_mod {
@@ -748,4 +752,66 @@ func cmdModPlay(cl *Client, songname string) {
 	}
 	cl.area.playMusic(songname, cl.charid, -1)
 	writeClientLog(cl, " changed music to "+songname)
+}
+
+func cmdReloadMusic(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	reloadMusicConfig()
+	cl.sendServerMessageOOC("Musiclist reloaded, restart your client.")
+	writeClientLog(cl, " reloaded the musiclist.")
+}
+
+func cmdLockArea(cl *Client, password string) {
+	if len(password) == 0 {
+		cl.sendServerMessageOOC("Must specify a password.")
+		return
+	}
+	if !cl.is_mod {
+		if !cl.area.canbelocked {
+			cl.sendServerMessageOOC("You cannot lock this area")
+			return
+		}
+	} else if cl.area.Areaid == config.Defaultarea {
+		cl.sendServerMessageOOC("You cannot lock the default area.")
+		return
+	}
+	cl.area.ispassworded = true
+	cl.area.password = password
+	cl.sendServerMessageOOC("The area is now locked with the password: " + password)
+	cl.area.sendServerMessageOOC(cl.getCharacterName() + " locked the area.")
+	writeClientLog(cl, " locked the area.")
+}
+
+func cmdUnlockArea(cl *Client) {
+	if !cl.area.ispassworded {
+		cl.sendServerMessageOOC("This area is not locked.")
+		return
+	}
+	cl.area.ispassworded = false
+	cl.sendServerMessageOOC("This area is now unlocked.")
+	cl.area.sendServerMessageOOC(cl.getCharacterName() + " unlocked the area.")
+	writeClientLog(cl, " unlocked the area.")
+}
+
+func cmdLockableArea(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("You must be a moderator to use that command.")
+		return
+	}
+	if cl.area.Areaid == config.Defaultarea {
+		cl.sendServerMessageOOC("You cannot lock the default area.")
+		return
+	}
+	if cl.area.canbelocked {
+		cl.area.canbelocked = false
+		cl.sendServerMessageOOC("This area is now not lockable.")
+		writeClientLog(cl, " changed the area to not lockable.")
+	} else {
+		cl.area.canbelocked = true
+		cl.sendServerMessageOOC("This area is now lockable.")
+		writeClientLog(cl, " changed the area to lockable.")
+	}
 }

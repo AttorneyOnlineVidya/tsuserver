@@ -61,7 +61,7 @@ func handleClient(conn net.Conn) {
 
 	next_clientid += 1
 	client_list.addClient(&client)
-	client.changeAreaID(config.Defaultarea)
+	client.changeAreaID(config.Defaultarea, "")
 
 	char_list_pages := loadCharPages(10)
 	music_list_pages := loadMusicPages(10)
@@ -322,7 +322,7 @@ func parseMusic(rawmsg string, client *Client) error {
 	if songname[0] == '>' {
 		for _, a := range config.Arealist {
 			if strings.ToLower(songname[1:len(songname)]) == strings.ToLower(a.Name) {
-				if err := client.changeAreaID(a.Areaid); err != nil {
+				if err := client.changeAreaID(a.Areaid, ""); err != nil {
 					client.sendServerMessageOOC(err.Error())
 					return err
 				} else {
@@ -642,6 +642,14 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdCoinFlip(client)
 		case "play":
 			cmdModPlay(client, target)
+		case "reloadmusic":
+			cmdReloadMusic(client)
+		case "lockarea":
+			cmdLockArea(client, target)
+		case "unlockarea":
+			cmdUnlockArea(client)
+		case "lockable":
+			cmdLockableArea(client)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

@@ -34,3 +34,9 @@ Background = "gs4"
 Areaid = 6
 Name = "Lounge"
 Background = "cofe"
+
+[[Arealist]]
+Areaid = 20
+Name = "ERP zone"
+Background = "cofe"
+IsHidden = true

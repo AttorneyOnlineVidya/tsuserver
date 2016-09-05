@@ -96,3 +96,24 @@ func loadConfig() {
 		config.Arealist[i].initialize()
 	}
 }
+
+func reloadMusicConfig() {
+	var tmpconf struct{ Musiclist []string }
+
+	if _, err := toml.DecodeFile("./config/musiclist.toml", &tmpconf); err != nil {
+		log.Fatal(err)
+	}
+	config.Musiclist = nil
+	for _, v := range tmpconf.Musiclist {
+		spl := strings.Split(v, "*")
+		name := spl[0]
+		dur := -1
+		if len(spl) == 2 {
+			tmpdur, _ := strconv.Atoi(spl[1])
+			dur = tmpdur
+		}
+
+		s := Song{Name: name, Duration: dur}
+		config.Musiclist = append(config.Musiclist, s)
+	}
+}

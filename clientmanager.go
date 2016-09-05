@@ -55,7 +55,7 @@ type ClientList struct {
 
 // ================
 
-func (cl *Client) changeAreaID(areaid int) error {
+func (cl *Client) changeAreaID(areaid int, password string) error {
 	// check if the target area is the same
 	if cl.area != nil && cl.area.Areaid == areaid {
 		return errors.New("Target area is the same as the current one.")
@@ -64,6 +64,15 @@ func (cl *Client) changeAreaID(areaid int) error {
 	v := getAreaPtr(areaid)
 	if v == nil {
 		return errors.New("Target area does not exist.")
+	}
+	// check if the target area is passworded
+	if v.ispassworded == true && !cl.is_mod {
+		if len(password) == 0 {
+			return errors.New("Target area is passworded.")
+		}
+		if password != v.password {
+			return errors.New("Password for that area is wrong.")
+		}
 	}
 
 	cl.lock.Lock()
@@ -232,6 +241,9 @@ func (cl *Client) getAreaPtr() *Area {
 func (cl Client) getPrintableAreaList() string {
 	var ret string
 	for _, a := range config.Arealist {
+		if !cl.is_mod && a.IsHidden {
+			continue
+		}
 		cnt := a.getCharCount()
 		ret += "\r\nArea " + strconv.Itoa(a.Areaid) + ": " +
 			a.Name + " (" + strconv.Itoa(cnt) + " user"
@@ -243,6 +255,9 @@ func (cl Client) getPrintableAreaList() string {
 			ret += " (*)"
 		}
 		ret += "\r\n[" + a.status + "]"
+		if a.ispassworded {
+			ret += "[LOCKED]"
+		}
 	}
 	fmt.Println(ret)
 	return ret
