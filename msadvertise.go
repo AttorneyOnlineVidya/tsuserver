@@ -26,6 +26,11 @@ import (
 	"time"
 )
 
+var (
+	advertiseMS bool
+	advertiseMu sync.Mutex
+)
+
 func msAdvertiser() {
 	var conn net.Conn
 	var is_connected bool = false
@@ -36,6 +41,10 @@ func msAdvertiser() {
 	ticker := time.NewTicker(15 * time.Second)
 	go func() {
 		for range ticker.C {
+			advertising := isAdvertising()
+			if !advertising {
+				return
+			}
 			lock.Lock()
 			if is_connected {
 				conn.Write([]byte("PING#%"))
@@ -45,6 +54,8 @@ func msAdvertiser() {
 	}()
 
 	for {
+		advertising := isAdvertising()
+
 		// check if MS is connected
 		if !is_connected {
 			if c, err := msConnect(); err != nil {
@@ -61,6 +72,10 @@ func msAdvertiser() {
 				lock.Unlock()
 			}
 		}
+		if !advertising {
+			conn.Close()
+			return
+		}
 
 		// read data
 		str, err := reader.ReadString('%')
@@ -71,7 +86,6 @@ func msAdvertiser() {
 			writeServerLog("Disconnected from master server. Retrying.")
 			continue
 		}
-
 		switch str {
 		case "NOSERV#%":
 			msSendInfo(conn)
@@ -97,4 +111,16 @@ func msSendInfo(conn net.Conn) {
 	} else {
 		writeServerLog("Server published on master server.")
 	}
+}
+
+func isAdvertising() bool {
+	advertiseMu.Lock()
+	defer advertiseMu.Unlock()
+	return advertiseMS
+}
+
+func setAdvertising(value bool) {
+	advertiseMu.Lock()
+	advertiseMS = value
+	advertiseMu.Unlock()
 }

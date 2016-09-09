@@ -88,6 +88,18 @@ func loadCharPages(perpage int) []string {
 	return ret
 }
 
+func loadEvidence() []string {
+	var ret []string
+	var str string = "EI#"
+	for i, v := range config.Evidencelist {
+		str += strconv.Itoa(i+1) + "#" + v.Name + "&" + v.Desc + "&" + v.Type + "&" + v.Image + "&##%"
+		ret = append(ret, str)
+		str = "EI#"
+	}
+
+	return ret
+}
+
 func loadMusicPages(perpage int) []string {
 	var ret []string
 	var str string = "EM#"

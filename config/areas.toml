@@ -9,6 +9,7 @@ Background = "gs4"	##The background the area will use by default
 Areaid = 1
 Name = "Courtroom 1"
 Background = "gs5"
+IsHidden = true		##Hides the area from /area and /getareas for normal users
 
 [[Arealist]]
 Areaid = 2

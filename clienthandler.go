@@ -64,6 +64,7 @@ func handleClient(conn net.Conn) {
 	client.changeAreaID(config.Defaultarea, "")
 
 	char_list_pages := loadCharPages(10)
+	evidence_list := loadEvidence()
 	music_list_pages := loadMusicPages(10)
 
 	// 5 messages per second, max burst of 8
@@ -150,7 +151,7 @@ func handleClient(conn net.Conn) {
 
 		case "askchaa": // asking for char/evi/music list lengths
 			client.sendRawMessage("SI#" + strconv.Itoa(len(config.Charlist)) +
-				"#0#" + strconv.Itoa(len(config.Musiclist)) + "#%")
+				"#" + strconv.Itoa(len(config.Evidencelist)+1) + "#" + strconv.Itoa(len(config.Musiclist)) + "#%")
 
 		case "askchar2": // send list of characters
 			client.sendRawMessage(char_list_pages[0])
@@ -160,11 +161,16 @@ func handleClient(conn net.Conn) {
 			if (char_start < len(char_list_pages)) && (char_start >= 0) {
 				client.sendRawMessage(char_list_pages[char_start])
 			} else {
-				client.sendRawMessage(music_list_pages[0])
+				client.sendRawMessage(evidence_list[0])
 			}
 
 		case "AE": // evidence list
-			continue
+			evi_start, _ := strconv.Atoi(strings.Split(rawmsg, "#")[1])
+			if (evi_start < len(config.Evidencelist)) && (evi_start >= 0) {
+				client.sendRawMessage(evidence_list[evi_start])
+			} else {
+				client.sendRawMessage(music_list_pages[0])
+			}
 
 		case "AM": // music list
 			music_start, _ := strconv.Atoi(strings.Split(rawmsg, "#")[1])
@@ -373,7 +379,7 @@ MS#chat#damage#Portsman#damaged#text#pro#sfx-stab#1#20#1#0#0#20#0#0#%
 9  = char id
 10 = sound effect delay (>= 0)
 11 = buttons (1 = hold it, 2 = objection, 3 = take that)
-12 = ???
+12 = evidence
 13 = char id
 14 = ding (1 is ding)
 15 = color (0 = black, 1 = green, 2 = red, 3 = orange, 4 = blue)
@@ -644,12 +650,24 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdModPlay(client, target)
 		case "reloadmusic":
 			cmdReloadMusic(client)
+		case "reloadcharlist":
+			cmdReloadCharlist(client)
+		case "reloadbackgrounds":
+			cmdReloadBackgrounds(client)
+		case "reloadconfig":
+			cmdReloadConfig(client)
+		case "reloadevidence":
+			cmdReloadEvidence(client)
 		case "lockarea":
 			cmdLockArea(client, target)
 		case "unlockarea":
 			cmdUnlockArea(client)
 		case "lockable":
 			cmdLockableArea(client)
+		case "masterserveradvertising":
+			cmdMasterServerAdvertising(client)
+		case "evi":
+			cmdGiveEvidence(client, target)
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}

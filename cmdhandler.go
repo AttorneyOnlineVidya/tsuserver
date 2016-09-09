@@ -815,3 +815,74 @@ func cmdLockableArea(cl *Client) {
 		writeClientLog(cl, " changed the area to lockable.")
 	}
 }
+
+func cmdReloadCharlist(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	reloadCharList()
+	cl.sendServerMessageOOC("Character list reloaded, restart your client.")
+	writeClientLog(cl, " reloaded the charlist.")
+}
+
+func cmdReloadConfig(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	reloadConfig()
+	cl.sendServerMessageOOC("Config reloaded.")
+	writeClientLog(cl, " reloaded the config.")
+}
+
+func cmdReloadBackgrounds(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	reloadCharList()
+	cl.sendServerMessageOOC("Background list reloaded.")
+	writeClientLog(cl, " reloaded the bglist.")
+}
+
+func cmdReloadEvidence(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	reloadEvidence()
+	cl.sendServerMessageOOC("Evidence list reloaded, restart your client")
+	writeClientLog(cl, " reloaded the evidence list.")
+}
+
+func cmdMasterServerAdvertising(cl *Client) {
+	advertising := isAdvertising()
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+	if advertising {
+		setAdvertising(false)
+		cl.sendServerMessageOOC("Master server advertising has been stopped.")
+		writeClientLog(cl, "Stopped advertising on the master server.")
+	} else {
+		setAdvertising(true)
+		go msAdvertiser()
+		cl.sendServerMessageOOC("Master server advertising has been started.")
+		writeClientLog(cl, "started advertising on the master server.")
+	}
+}
+
+func cmdGiveEvidence(cl *Client, evirequest string) {
+	evinumber, err := strconv.Atoi(evirequest)
+	if err != nil {
+		cl.sendServerMessageOOC("The evidence must be a number.")
+		return
+	}
+	if evinumber <= 0 || evinumber > len(config.Evidencelist) {
+		cl.sendServerMessageOOC("Could not find that evidence, please use a number between 1 and " + strconv.Itoa(len(config.Evidencelist)))
+		return
+	}
+	cl.sendRawMessage("MS#chat#normal#Hawk#tie#Evidence " + evirequest + "#jud#1#0#0#0#0#" + evirequest + "#0#0#3#%")
+}

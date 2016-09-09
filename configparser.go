@@ -33,12 +33,20 @@ type Song struct {
 	Duration int
 }
 
+type Evidence struct {
+	Type  string
+	Name  string
+	Desc  string
+	Image string
+}
+
 type Config struct {
 	Port           int
 	Slots          int
 	Charlist       []string
 	Musiclist      []Song
 	Arealist       []Area
+	Evidencelist   []Evidence
 	Backgroundlist []string
 	Defaultarea    int
 	Timeout        int
@@ -65,6 +73,10 @@ func loadConfig() {
 	}
 
 	if _, err := toml.DecodeFile("./config/areas.toml", &config); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := toml.DecodeFile("./config/evidence.toml", &config); err != nil {
 		log.Fatal(err)
 	}
 
@@ -115,5 +127,45 @@ func reloadMusicConfig() {
 
 		s := Song{Name: name, Duration: dur}
 		config.Musiclist = append(config.Musiclist, s)
+	}
+}
+
+func reloadCharList() {
+	config.Charlist = nil
+
+	if _, err := toml.DecodeFile("./config/characters.toml", &config); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func reloadBackgroundlist() {
+	config.Backgroundlist = nil
+
+	if _, err := toml.DecodeFile("./config/backgrounds.toml", &config); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func reloadConfig() {
+	config.Slots = -1
+	config.Timeout = -1
+	config.Reservedname = ""
+	config.Modpass = ""
+	config.Guardpass = ""
+	config.Advertise = false
+	config.Masterserver = ""
+	config.Servername = ""
+	config.Description = ""
+	config.MOTD = ""
+	if _, err := toml.DecodeFile("./config/config.toml", &config); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func reloadEvidence() {
+	config.Evidencelist = nil
+
+	if _, err := toml.DecodeFile("./config/evidence.toml", &config); err != nil {
+		log.Fatal(err)
 	}
 }

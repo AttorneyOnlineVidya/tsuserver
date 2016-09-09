@@ -51,6 +51,7 @@ func main() {
 	calcKeys()
 
 	if config.Advertise {
+		setAdvertising(true)
 		go msAdvertiser()
 	}
 
