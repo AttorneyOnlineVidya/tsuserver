@@ -1,0 +1,11 @@
+[[Evidencelist]]
+type = "1"
+name = "Default Name"
+desc = "Default Description"
+image = "1.gif"
+
+[[Evidencelist]]
+type = "1"
+name = "Autopsy"
+desc = "The victim was stabbed 3 times in the back."
+image = "2.png"

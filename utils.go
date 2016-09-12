@@ -91,10 +91,19 @@ func loadCharPages(perpage int) []string {
 func loadEvidence() []string {
 	var ret []string
 	var str string = "EI#"
+	var cnt int
 	for i, v := range config.Evidencelist {
 		str += strconv.Itoa(i+1) + "#" + v.Name + "&" + v.Desc + "&" + v.Type + "&" + v.Image + "&##%"
 		ret = append(ret, str)
 		str = "EI#"
+		cnt = i + 1
+	}
+	cnt++
+	for _, v := range cust.Evidencelist {
+		str += strconv.Itoa(cnt) + "#" + v.Name + "&" + v.Desc + "&" + v.Type + "&" + v.Image + "&##%"
+		ret = append(ret, str)
+		str = "EI#"
+		cnt++
 	}
 
 	return ret
@@ -232,4 +241,9 @@ func CreateFile(name string) error {
 func randomInt(min int, max int) int {
 	result := min + rand.Intn(max)
 	return result
+}
+
+func (evi *Customevidence) AddEvidence(entry Evidence) []Evidence {
+	evi.Evidencelist = append(evi.Evidencelist, entry)
+	return evi.Evidencelist
 }

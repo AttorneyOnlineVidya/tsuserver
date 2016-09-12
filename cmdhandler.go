@@ -880,9 +880,39 @@ func cmdGiveEvidence(cl *Client, evirequest string) {
 		cl.sendServerMessageOOC("The evidence must be a number.")
 		return
 	}
-	if evinumber <= 0 || evinumber > len(config.Evidencelist) {
-		cl.sendServerMessageOOC("Could not find that evidence, please use a number between 1 and " + strconv.Itoa(len(config.Evidencelist)))
+	if evinumber <= 0 || evinumber > (len(config.Evidencelist)+len(cust.Evidencelist)) {
+		cl.sendServerMessageOOC("Could not find that evidence, please use a number between 1 and " + strconv.Itoa(len(config.Evidencelist)+len(cust.Evidencelist)))
 		return
 	}
 	cl.sendRawMessage("MS#chat#normal#Hawk#tie#Evidence " + evirequest + "#jud#1#0#0#0#0#" + evirequest + "#0#0#3#%")
+}
+
+func cmdCreateEvidence(cl *Client, evistring string) {
+	split_evi := strings.Split(evistring, "<num>")
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	if len(split_evi) != 4 {
+		cl.sendServerMessageOOC("The evidence must be seperated with '#'")
+		return
+	}
+
+	evi := Evidence{Name: split_evi[0], Desc: split_evi[1], Type: split_evi[2], Image: split_evi[3]}
+	cust.AddEvidence(evi)
+	newlength := len(cust.Evidencelist) + len(config.Evidencelist)
+	cl.sendServerMessageOOC("Evidence created, evidence number is " + strconv.Itoa(newlength))
+	writeClientLog(cl, "created a new piece of evidence")
+}
+
+func cmdClearCustomEvidence(cl *Client) {
+	if !cl.is_mod {
+		cl.sendServerMessageOOC("Invalid command.")
+		return
+	}
+
+	cust.Evidencelist = nil
+	cl.sendServerMessageOOC("Custom evidence list cleared.")
+	writeClientLog(cl, "cleared the custom evidence list.")
 }

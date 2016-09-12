@@ -27,10 +27,14 @@ import (
 )
 
 var server_version string = "tsuserver0.1"
+var cust Customevidence
 
 type Song struct {
 	Name     string
 	Duration int
+}
+type Customevidence struct {
+	Evidencelist []Evidence
 }
 
 type Evidence struct {

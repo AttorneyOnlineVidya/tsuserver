@@ -151,7 +151,7 @@ func handleClient(conn net.Conn) {
 
 		case "askchaa": // asking for char/evi/music list lengths
 			client.sendRawMessage("SI#" + strconv.Itoa(len(config.Charlist)) +
-				"#" + strconv.Itoa(len(config.Evidencelist)+1) + "#" + strconv.Itoa(len(config.Musiclist)) + "#%")
+				"#" + strconv.Itoa(len(evidence_list)+1) + "#" + strconv.Itoa(len(config.Musiclist)) + "#%")
 
 		case "askchar2": // send list of characters
 			client.sendRawMessage(char_list_pages[0])
@@ -166,7 +166,7 @@ func handleClient(conn net.Conn) {
 
 		case "AE": // evidence list
 			evi_start, _ := strconv.Atoi(strings.Split(rawmsg, "#")[1])
-			if (evi_start < len(config.Evidencelist)) && (evi_start >= 0) {
+			if (evi_start < len(evidence_list)) && (evi_start >= 0) {
 				client.sendRawMessage(evidence_list[evi_start])
 			} else {
 				client.sendRawMessage(music_list_pages[0])
@@ -668,6 +668,11 @@ func parseMessageOOC(rawmsg string, client *Client) (string, error) {
 			cmdMasterServerAdvertising(client)
 		case "evi":
 			cmdGiveEvidence(client, target)
+		case "crevi":
+			cmdCreateEvidence(client, target)
+		case "clearcustevi":
+			cmdClearCustomEvidence(client)
+
 		default:
 			client.sendServerMessageOOC("Invalid command.")
 		}
