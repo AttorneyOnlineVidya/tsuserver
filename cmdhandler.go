@@ -69,7 +69,7 @@ func cmdGetArea(cl *Client, id string) {
 
 	ret += fmt.Sprintf("=== Area %d: %s ===", aptr.Areaid, aptr.Name)
 	for _, c := range aptr.sortedClientsByName() {
-		if cl.is_mod {
+		if cl.isMod() {
 			ret += fmt.Sprintf("\r\n%s; IP: %s", c.getCharacterName(), c.IP.String())
 			if c.is_mod {
 				ret += " (mod)"
@@ -87,12 +87,12 @@ func cmdGetAllAreas(cl *Client) {
 	var ret string
 	for i := range config.Arealist {
 		aptr := &config.Arealist[i]
-		if !cl.is_mod && aptr.IsHidden {
+		if !cl.isMod() && aptr.IsHidden {
 			continue
 		}
 		ret += fmt.Sprintf("\r\n=== Area %d: %s ===", aptr.Areaid, aptr.Name)
 		for _, c := range aptr.sortedClientsByName() {
-			if cl.is_mod {
+			if cl.isMod() {
 				ret += fmt.Sprintf("\r\n%s; IP: %s", c.getCharacterName(), c.IP.String())
 				if c.is_mod {
 					ret += " (mod)"
@@ -110,8 +110,8 @@ func cmdBackground(cl *Client, args []string) {
 	if len(args) == 0 {
 		cl.sendServerMessageOOC("The current background is " + cl.area.Background)
 	} else if cl.area.bglock == true {
-		if cl.is_mod == true {
-			if err := cl.area.changeBackground(args[0], cl.is_mod); err != nil {
+		if cl.isMod() == true {
+			if err := cl.area.changeBackground(args[0], cl.isMod()); err != nil {
 				cl.sendServerMessageOOC("Background not found.")
 			} else {
 				cl.area.sendServerMessageOOC(fmt.Sprintf("%s changed background to %s.",
@@ -122,7 +122,7 @@ func cmdBackground(cl *Client, args []string) {
 			cl.sendServerMessageOOC("A moderator has locked the background")
 		}
 	} else {
-		if err := cl.area.changeBackground(args[0], cl.is_mod); err != nil {
+		if err := cl.area.changeBackground(args[0], cl.isMod()); err != nil {
 			cl.sendServerMessageOOC("Background not found.")
 		} else {
 			cl.area.sendServerMessageOOC(fmt.Sprintf("%s changed background to %s.",
@@ -133,7 +133,7 @@ func cmdBackground(cl *Client, args []string) {
 }
 
 func cmdBgLock(cl *Client) {
-	if cl.is_mod == true {
+	if cl.isMod() == true {
 		if cl.area.bglock {
 			cl.area.bglock = false
 			cl.area.sendServerMessageOOC("Background unlocked.")
@@ -155,7 +155,7 @@ func cmdLogin(cl *Client, args []string) {
 	}
 
 	if args[0] == config.Modpass {
-		cl.is_mod = true
+		cl.setMod(true)
 		cl.sendServerMessageOOC("Logged in as a moderator.")
 		writeClientLog(cl, "Logged in as a moderator.")
 	} else {
@@ -165,7 +165,7 @@ func cmdLogin(cl *Client, args []string) {
 }
 
 func cmdIpList(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You cannot use that command.")
 		return
 	}
@@ -182,7 +182,7 @@ func cmdIpList(cl *Client) {
 }
 
 func cmdMute(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -205,7 +205,7 @@ func cmdMute(cl *Client, target string) {
 }
 
 func cmdUnmute(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -229,7 +229,7 @@ func cmdUnmute(cl *Client, target string) {
 }
 
 func cmdDJ(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -252,7 +252,7 @@ func cmdDJ(cl *Client, target string) {
 }
 
 func cmdUnDJ(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -275,7 +275,7 @@ func cmdUnDJ(cl *Client, target string) {
 }
 
 func cmdKick(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -296,7 +296,7 @@ func cmdKick(cl *Client, target string) {
 }
 
 func cmdBan(cl *Client, args []string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -331,7 +331,7 @@ func cmdBan(cl *Client, args []string) {
 }
 
 func cmdReloadBans(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -362,7 +362,7 @@ func cmdSwitch(cl *Client, name string) {
 func cmdCharselect(cl *Client, target string) {
 	if len(target) == 0 {
 		cl.charSelect()
-	} else if cl.is_mod {
+	} else if cl.isMod() {
 		cnt := 0
 		for _, v := range client_list.findAllTargets(cl, target) {
 			v.charSelect()
@@ -491,7 +491,7 @@ func cmdAdvertToggle(cl *Client) {
 }
 
 func cmdModAnnounce(cl *Client, message string) {
-	if cl.is_mod != true {
+	if cl.isMod() != true {
 		cl.sendServerMessageOOC("You do not have permission to use that")
 	} else if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty.")
@@ -504,7 +504,7 @@ func cmdModAnnounce(cl *Client, message string) {
 func cmdMOTD(cl *Client, message string) {
 	if len(message) == 0 {
 		cl.sendServerMessageOOC("\r\n========MOTD========\r\n" + config.MOTD + "\r\n===================")
-	} else if cl.is_mod {
+	} else if cl.isMod() {
 		config.MOTD = message
 		writeClientLog(cl, "changed the MOTD.")
 	}
@@ -568,7 +568,7 @@ func cmdStatus(cl *Client, target string) {
 }
 
 func cmdLocalMod(cl *Client, message string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You do not have permission to use that")
 	} else if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty")
@@ -579,7 +579,7 @@ func cmdLocalMod(cl *Client, message string) {
 }
 
 func cmdGlobalMod(cl *Client, message string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You do not have permission to use that")
 	} else if len(message) == 0 {
 		cl.sendServerMessageOOC("Message is empty")
@@ -606,7 +606,7 @@ func cmdGetDoc(cl *Client) {
 }
 
 func cmdNewPoll(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You do not have permission to use that.")
 		return
 	}
@@ -631,7 +631,7 @@ func cmdNewPoll(cl *Client, target string) {
 }
 
 func cmdPollResults(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You do not have permission to use that.")
 		return
 	}
@@ -658,7 +658,7 @@ func cmdPollInfo(cl *Client, target string) {
 }
 
 func cmdClosePoll(cl *Client, target string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You do not have permission to use that.")
 		return
 	}
@@ -716,7 +716,7 @@ func cmdVote(cl *Client, args []string) {
 }
 
 func cmdReloadPolls(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -732,7 +732,7 @@ func cmdReloadPolls(cl *Client) {
 func cmdJudgeLog(cl *Client) {
 	var aptr = cl.getAreaPtr()
 	var ret string
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -746,7 +746,7 @@ func cmdJudgeLog(cl *Client) {
 }
 
 func cmdModPlay(cl *Client, songname string) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -755,7 +755,7 @@ func cmdModPlay(cl *Client, songname string) {
 }
 
 func cmdReloadMusic(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -769,7 +769,7 @@ func cmdLockArea(cl *Client, password string) {
 		cl.sendServerMessageOOC("Must specify a password.")
 		return
 	}
-	if !cl.is_mod {
+	if !cl.isMod() {
 		if !cl.area.canbelocked {
 			cl.sendServerMessageOOC("You cannot lock this area")
 			return
@@ -797,7 +797,7 @@ func cmdUnlockArea(cl *Client) {
 }
 
 func cmdLockableArea(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("You must be a moderator to use that command.")
 		return
 	}
@@ -817,7 +817,7 @@ func cmdLockableArea(cl *Client) {
 }
 
 func cmdReloadCharlist(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -827,7 +827,7 @@ func cmdReloadCharlist(cl *Client) {
 }
 
 func cmdReloadConfig(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -837,7 +837,7 @@ func cmdReloadConfig(cl *Client) {
 }
 
 func cmdReloadBackgrounds(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -847,7 +847,7 @@ func cmdReloadBackgrounds(cl *Client) {
 }
 
 func cmdReloadEvidence(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -858,7 +858,7 @@ func cmdReloadEvidence(cl *Client) {
 
 func cmdMasterServerAdvertising(cl *Client) {
 	advertising := isAdvertising()
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -889,7 +889,7 @@ func cmdGiveEvidence(cl *Client, evirequest string) {
 
 func cmdCreateEvidence(cl *Client, evistring string) {
 	split_evi := strings.Split(evistring, "<num>")
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}
@@ -907,7 +907,7 @@ func cmdCreateEvidence(cl *Client, evistring string) {
 }
 
 func cmdClearCustomEvidence(cl *Client) {
-	if !cl.is_mod {
+	if !cl.isMod() {
 		cl.sendServerMessageOOC("Invalid command.")
 		return
 	}

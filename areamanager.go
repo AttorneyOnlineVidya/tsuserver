@@ -130,24 +130,6 @@ func (a *Area) initialize() {
 	a.canbelocked = false
 }
 
-func (a *Area) setDefHP(hp int) error {
-	if hp >= 0 && hp <= 10 {
-		a.hp_def = hp
-		return nil
-	} else {
-		return errors.New("Invalid HP value.")
-	}
-}
-
-func (a *Area) setProHP(hp int) error {
-	if hp >= 0 && hp <= 10 {
-		a.hp_pro = hp
-		return nil
-	} else {
-		return errors.New("Invalid HP value.")
-	}
-}
-
 func (a *Area) playMusic(songname string, charid int, duration int) {
 	a.lock.Lock()
 	defer a.lock.Unlock()
@@ -257,6 +239,43 @@ func (a *Area) sortedClientsByName() []*Client {
 	return ret
 }
 
+func (a *Area) judgeLog(cl *Client, action string) {
+	a.lock.Lock()
+	defer a.lock.Unlock()
+
+	if len(a.HPLog) >= 10 {
+		a.HPLog = append(a.HPLog[:0], a.HPLog[1:]...)
+		a.HPLog = append(a.HPLog, cl.getCharacterName()+"("+cl.IP.String()+")"+action)
+	} else {
+		a.HPLog = append(a.HPLog, cl.getCharacterName()+"("+cl.IP.String()+")"+action)
+	}
+}
+
+// getters and setters
+func (a *Area) setDefHP(hp int) error {
+	if hp >= 0 && hp <= 10 {
+		a.lock.Lock()
+		defer a.lock.Unlock()
+
+		a.hp_def = hp
+		return nil
+	} else {
+		return errors.New("Invalid HP value.")
+	}
+}
+
+func (a *Area) setProHP(hp int) error {
+	if hp >= 0 && hp <= 10 {
+		a.lock.Lock()
+		defer a.lock.Unlock()
+
+		a.hp_pro = hp
+		return nil
+	} else {
+		return errors.New("Invalid HP value.")
+	}
+}
+
 func (a *Area) setAreaStatus(cl *Client, status string) {
 	a.lock.Lock()
 	defer a.lock.Unlock()
@@ -285,15 +304,4 @@ func (a *Area) getDoc() string {
 	defer a.lock.RUnlock()
 
 	return a.docurl
-}
-
-func (a *Area) judgeLog(cl *Client, action string) {
-	a.lock.Lock()
-	defer a.lock.Unlock()
-	if len(a.HPLog) >= 10 {
-		a.HPLog = append(a.HPLog[:0], a.HPLog[1:]...)
-		a.HPLog = append(a.HPLog, cl.getCharacterName()+"("+cl.IP.String()+")"+action)
-	} else {
-		a.HPLog = append(a.HPLog, cl.getCharacterName()+"("+cl.IP.String()+")"+action)
-	}
 }
